@@ -7,12 +7,25 @@ return [
     |--------------------------------------------------------------------------
     |
     | These directories will be monitored for changes when running
-    | `php artisan scabbard:build --watch`. Any change triggers a rebuild.
+    | `php artisan scabbard:serve`. Any change triggers a rebuild.
     |
     */
   'watch_dirs' => [
     base_path('resources'),
     base_path('app'),
+    base_path('public'),
+  ],
+
+  /*
+    |--------------------------------------------------------------------------
+    | Directories to Copy
+    |--------------------------------------------------------------------------
+    |
+  | These directories will be copied recursively to the output directory
+  | before rendering the configured routes.
+    |
+    */
+  'copy_dirs' => [
     base_path('public'),
   ],
 
@@ -28,25 +41,10 @@ return [
 
   /*
     |--------------------------------------------------------------------------
-    | Directories to Copy
-    |--------------------------------------------------------------------------
-    |
-  | These directories will be copied recursively to the output directory
-  | before rendering the configured routes.
-    |
-    */
-  'copy_dirs' => [
-    base_path('public'),
-  ],
-
-
-  /*
-    |--------------------------------------------------------------------------
     | Routes to Render
     |--------------------------------------------------------------------------
     |
-    | Mapping of URIs to output file names. Each route will be processed through
-    | Laravel's routing layer and saved to the specified file.
+    | Mapping of URIs to output file names. Routes should be defined in your app's `routes/web.php`.
     |
     */
   'routes' => [
