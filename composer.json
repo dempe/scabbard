@@ -15,5 +15,9 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {},
+		"require-dev": {
+			"orchestra/testbench": "^8.0 || ^9.0",
+			"phpunit/phpunit": "^10.0"
+		}
 }
