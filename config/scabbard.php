@@ -31,27 +31,14 @@ return [
     | Directories to Copy
     |--------------------------------------------------------------------------
     |
-    | These directories will be copied recursively to the output directory
-    | before rendering the configured views.
+  | These directories will be copied recursively to the output directory
+  | before rendering the configured routes.
     |
     */
   'copy_dirs' => [
     base_path('public'),
   ],
 
-  /*
-    |--------------------------------------------------------------------------
-    | Views to Render
-    |--------------------------------------------------------------------------
-    |
-    | Mapping of output file names to Blade views that should be rendered
-    | and saved during the build process.
-    |
-    */
-  'views' => [
-    'index.html' => 'home',
-    '404.html'   => '404',
-  ],
 
   /*
     |--------------------------------------------------------------------------

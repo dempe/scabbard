@@ -40,8 +40,8 @@ class Build extends Command
   }
 
   /**
-   *  Generate the static site by clearing views, copying configured directories,
-   *  rendering any configured routes, and writing HTML files.
+   *  Generate the static site by copying configured directories and
+   *  rendering any configured routes to HTML files.
    *
    * @returns void No return value.
    */
@@ -73,15 +73,6 @@ class Build extends Command
       File::put("$outputPath/{$filename}", $response->getContent());
     }
 
-    $views = Config::get('scabbard.views', []);
-    foreach ($views as $filename => $view) {
-      try {
-        File::put("$outputPath/{$filename}", view($view)->render());
-      } catch (\InvalidArgumentException $e) {
-        // Skip views that cannot be rendered
-        continue;
-      }
-    }
 
     $this->info('[' . now()->format('H:i:s') . '] ' . "Site copied to: $outputPath");
     $this->info('[' . now()->format('H:i:s') . '] ' . 'Site build complete.');

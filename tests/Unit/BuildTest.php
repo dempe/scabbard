@@ -22,8 +22,9 @@ class BuildTest extends TestCase
     File::put("{$tempInputDir}/index.php", 'index');
 
     Config::set('scabbard.copy_dirs', [$tempInputDir]);
-    Config::set('scabbard.views', ['test.html' => 'home']);
+    Config::set('scabbard.routes', ['/test' => 'test.html']);
     Config::set('scabbard.output_path', $tempOutputDir);
+    app('router')->get('/test', fn () => view('home'));
 
     Artisan::call('scabbard:build');
 
@@ -42,12 +43,12 @@ class BuildTest extends TestCase
     File::deleteDirectory($tempOutputDir);
 
     Config::set('scabbard.copy_dirs', ['/missing-dir']);
-    Config::set('scabbard.views', ['bad.html' => 'missing-view']);
+    Config::set('scabbard.routes', ['/bad-route' => 'bad.html']);
     Config::set('scabbard.output_path', $tempOutputDir);
 
     Artisan::call('scabbard:build');
 
-    $this->assertFalse(File::exists("{$tempOutputDir}/bad.html"));
+    $this->assertTrue(File::exists("{$tempOutputDir}/bad.html"));
 
     File::deleteDirectory($tempOutputDir);
   }
