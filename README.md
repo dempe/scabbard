@@ -48,13 +48,6 @@ Use the `--watch` flag to enable hot rebuilds without running a server:
 php artisan scabbard:build --watch
 ```
 
-### Watch
-
-```
-php artisan scabbard:watch
-```
-
-This is just an alias for `php artisan scabbard:build --watch`
 
 ## Static Analysis
 
