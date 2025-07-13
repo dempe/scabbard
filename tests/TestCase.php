@@ -4,6 +4,11 @@ namespace Scabbard\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
+/**
+ * Base test case for package tests.
+ *
+ * @property \Illuminate\Foundation\Application $app
+ */
 abstract class TestCase extends BaseTestCase
 {
   protected function getPackageProviders($app)
