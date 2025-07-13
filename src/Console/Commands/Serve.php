@@ -18,7 +18,7 @@ class Serve extends Command
     $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $port = Config::get('scabbard.serve_port', 8000);
 
-    $router = base_path('serve_router.php');
+    $router = base_path('router.php');
     $process = new Process([
       'php',
       '-S',
