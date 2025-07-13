@@ -31,7 +31,7 @@ class Serve extends Command
 
     $this->info('[' . now()->format('H:i:s') . '] ' . 'Serving site on http://127.0.0.1:' . $port);
 
-    Artisan::call('scabbard:watch', ['--once' => $this->option('once')], $this->output);
+    Artisan::call('scabbard:build', ['--watch' => true, '--once' => $this->option('once')], $this->output);
 
     $this->info('[' . now()->format('H:i:s') . '] ' . 'Serving site on http://127.0.0.1:' . $port);
 

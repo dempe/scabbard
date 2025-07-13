@@ -5,17 +5,18 @@ namespace Scabbard\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
+use Scabbard\Console\Commands\Concerns\WatchesFiles;
 
 class Build extends Command
 {
+  use WatchesFiles;
   /**
    * The name and signature of the console command.
    *
    * @var string
    */
-  protected $signature = 'scabbard:build {--watch}';
+  protected $signature = 'scabbard:build {--watch} {--once}';
 
   /**
    * The console command description.
@@ -32,7 +33,27 @@ class Build extends Command
   public function handle()
   {
     if ($this->option('watch')) {
-      Artisan::call('scabbard:watch', [], $this->output);
+      $this->info('[' . now()->format('H:i:s') . '] ' . 'Watching for changes...');
+
+      $lastHash = null;
+
+      do {
+        $currentHash = $this->hashAllWatchedFiles();
+
+        if ($lastHash !== $currentHash) {
+          $lastHash = $currentHash;
+          $this->info('[' . now()->format('H:i:s') . '] ' . 'Rebuilding...');
+          $this->buildSite();
+        }
+
+        $this->trap(SIGINT, function () {
+          $this->info('[' . now()->format('H:i:s') . '] ' . 'Watcher interrupted. Exiting.');
+          exit;
+        });
+
+        usleep(500000);
+      } while (! $this->option('once'));
+
       return;
     }
 

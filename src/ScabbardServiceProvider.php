@@ -4,7 +4,6 @@ namespace Scabbard;
 
 use Illuminate\Support\ServiceProvider;
 use Scabbard\Console\Commands\Build;
-use Scabbard\Console\Commands\Watch;
 use Scabbard\Console\Commands\Serve;
 
 class ScabbardServiceProvider extends ServiceProvider
@@ -20,7 +19,6 @@ class ScabbardServiceProvider extends ServiceProvider
     // Register Artisan commands
     $this->commands([
       Build::class,
-      Watch::class,
       Serve::class,
     ]);
   }
