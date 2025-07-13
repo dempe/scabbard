@@ -9,6 +9,20 @@ use Scabbard\Tests\TestCase;
 
 class ServeTest extends TestCase
 {
+  // Use a stub build command that performs a single build without watching.
+  protected function setUp(): void
+  {
+    parent::setUp();
+
+    $kernel = $this->app->make(\Illuminate\Contracts\Console\Kernel::class);
+    $kernel->registerCommand(new class extends \Scabbard\Console\Commands\Build {
+      public function handle()
+      {
+        $this->buildSite();
+      }
+    });
+  }
+
   public function test_site_serve_runs_watch_and_serves(): void
   {
     $tempOutputDir = base_path('tests/tmp_output');
@@ -21,7 +35,7 @@ class ServeTest extends TestCase
     Config::set('scabbard.serve_port', 5678);
     app('router')->get('/serve', fn () => view('home'));
 
-    Artisan::call('scabbard:serve', ['--once' => true]);
+    Artisan::call('scabbard:serve');
 
     $this->assertTrue(File::exists("{$tempOutputDir}/serve.html"));
 
