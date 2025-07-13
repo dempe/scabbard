@@ -9,7 +9,7 @@ use Symfony\Component\Process\Process;
 
 class ServeSite extends Command
 {
-  protected $signature = 'site:serve {--once}';
+  protected $signature = 'scabbard:serve {--once}';
 
   protected $description = 'Watch the site and serve the built output';
 
@@ -29,7 +29,7 @@ class ServeSite extends Command
 
     $this->info('[' . now()->format('H:i:s') . '] ' . 'Serving site on http://127.0.0.1:' . $port);
 
-    Artisan::call('site:watch', ['--once' => $this->option('once')], $this->output);
+    Artisan::call('scabbard:watch', ['--once' => $this->option('once')], $this->output);
 
     $process->stop();
 
