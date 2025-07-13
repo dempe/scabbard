@@ -16,7 +16,7 @@ class ServeTest extends TestCase
 
     /** @var \Illuminate\Foundation\Console\Kernel $kernel */
     $kernel = $this->app->make(\Illuminate\Foundation\Console\Kernel::class);
-    $kernel->registerCommand(new class() extends \Scabbard\Console\Commands\Build {
+    $kernel->registerCommand(new class () extends \Scabbard\Console\Commands\Build {
       public function handle(): void
       {
         $this->buildSite();
@@ -34,7 +34,7 @@ class ServeTest extends TestCase
     Config::set('scabbard.routes', ['/serve' => 'serve.html']);
     Config::set('scabbard.output_path', $tempOutputDir);
     Config::set('scabbard.serve_port', 5678);
-    app('router')->get('/serve', fn() => view('home'));
+    app('router')->get('/serve', fn () => view('home'));
 
     Artisan::call('scabbard:serve');
 
