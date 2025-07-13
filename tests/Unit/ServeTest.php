@@ -14,9 +14,10 @@ class ServeTest extends TestCase
   {
     parent::setUp();
 
-    $kernel = $this->app->make(\Illuminate\Contracts\Console\Kernel::class);
+    /** @var \Illuminate\Foundation\Console\Kernel $kernel */
+    $kernel = $this->app->make(\Illuminate\Foundation\Console\Kernel::class);
     $kernel->registerCommand(new class extends \Scabbard\Console\Commands\Build {
-      public function handle()
+      public function handle(): void
       {
         $this->buildSite();
       }
