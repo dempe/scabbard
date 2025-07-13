@@ -8,7 +8,7 @@ abstract class TestCase extends BaseTestCase
 {
     protected function getPackageProviders($app)
     {
-        return [ScabbardServiceProvider::class];
+        return [\Scabbard\ScabbardServiceProvider::class];
     }
 
     protected function getEnvironmentSetUp($app)
