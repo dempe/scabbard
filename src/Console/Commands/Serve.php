@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\Process\Process;
 
-class ServeSite extends Command
+class Serve extends Command
 {
   protected $signature = 'scabbard:serve {--once}';
 

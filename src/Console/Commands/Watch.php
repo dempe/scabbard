@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Scabbard\Console\Commands\Concerns\WatchesFiles;
 
-class WatchSite extends Command
+class Watch extends Command
 {
   use WatchesFiles;
 

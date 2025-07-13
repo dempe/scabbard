@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Scabbard\Tests\TestCase;
 
-class BuildSiteTest extends TestCase
+class BuildTest extends TestCase
 {
     public function test_build_site_command_generates_static_files(): void
     {
