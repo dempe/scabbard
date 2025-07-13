@@ -34,13 +34,15 @@ Configs are in `config/scabbard.php`.
 
 ### Build
 
-If you don't want to run the server, you can just produce the static output:
+If you don't want to run the server, you can just produce the static output.
+
+This builds the site once and exits:
 
 ```
 php artisan scabbard:build
 ```
 
-Or if you don't want to run the server *and* want to continually build the site with hot rebuilds:
+Use the `--watch` flag to enable hot rebuilds without running a server:
 
 ```
 php artisan scabbard:build --watch
@@ -53,4 +55,17 @@ php artisan scabbard:watch
 ```
 
 This is just an alias for `php artisan scabbard:build --watch`
+
+## Notes
+
+- Works with Laravel 10 and above.
+- Scabbard does not require JavaScript, npm, or Node.js.
+- You can use any Blade features you normally would in Laravel.
+
+## Roadmap
+
+- [ ] Markdown parsing
+- [ ] Frontmatter parsing
+- [ ] Syntax highlighting
+- [ ] Deployment
 
