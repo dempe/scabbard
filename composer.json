@@ -1,0 +1,19 @@
+{
+    "name": "dempe/scabbard",
+    "description": "Artisan commands for generating a static site based on Blade templates",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Dempe\\Scabbard\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Christopher Dempewolf",
+            "email": "chris@chrisdempewolf.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
