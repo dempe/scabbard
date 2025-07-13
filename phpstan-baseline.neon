@@ -1,0 +1,55 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method Illuminate\\Contracts\\View\\Factory\|Illuminate\\Contracts\\View\\View\:\:render\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^Call to static method call\(\) on an unknown class Artisan\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^Method Scabbard\\Console\\Commands\\Build\:\:buildSite\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^Method Scabbard\\Console\\Commands\\Build\:\:deleteAndCreate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^Method Scabbard\\Console\\Commands\\Build\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(dir \- The directory path\.\)\: Unexpected token "\-", expected variable at offset 94 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^Parameter \#2 \$contents of static method Illuminate\\Support\\Facades\\File\:\:put\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Console/Commands/Build.php
+
+		-
+			message: '#^Method Scabbard\\Console\\Commands\\Serve\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Console/Commands/Serve.php
+
+		-
+			message: '#^Method Scabbard\\Console\\Commands\\Watch\:\:handle\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Console/Commands/Watch.php

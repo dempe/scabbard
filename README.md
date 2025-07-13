@@ -56,6 +56,16 @@ php artisan scabbard:watch
 
 This is just an alias for `php artisan scabbard:build --watch`
 
+## Static Analysis
+
+This project uses [PHPStan](https://phpstan.org/) for static code analysis. Run:
+
+```
+composer phpstan
+```
+
+to analyze the codebase.
+
 ## Notes
 
 - Works with Laravel 10 and above.
