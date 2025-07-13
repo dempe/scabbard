@@ -7,22 +7,21 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Scabbard\Tests\TestCase;
 
-class ServeSiteTest extends TestCase
+class WatchTest extends TestCase
 {
-    public function test_site_serve_runs_watch_and_serves(): void
+    public function test_site_watch_triggers_build(): void
     {
         $tempOutputDir = base_path('tests/tmp_output');
 
         File::deleteDirectory($tempOutputDir);
 
         Config::set('scabbard.copy_dirs', []);
-        Config::set('scabbard.views', ['serve.html' => 'home']);
+        Config::set('scabbard.views', ['watch.html' => 'home']);
         Config::set('scabbard.output_path', $tempOutputDir);
-        Config::set('scabbard.serve_port', 5678);
 
-        Artisan::call('scabbard:serve', ['--once' => true]);
+        Artisan::call('scabbard:watch', ['--once' => true]);
 
-        $this->assertTrue(File::exists("{$tempOutputDir}/serve.html"));
+        $this->assertTrue(File::exists("{$tempOutputDir}/watch.html"));
 
         File::deleteDirectory($tempOutputDir);
     }

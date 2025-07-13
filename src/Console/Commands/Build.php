@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Http\Request;
 
 
-class BuildSite extends Command
+class Build extends Command
 {
   /**
    * The name and signature of the console command.
