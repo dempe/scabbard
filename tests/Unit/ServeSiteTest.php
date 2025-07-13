@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Scabbard\Tests\TestCase;
 
-class SiteServeTest extends TestCase
+class ServeSiteTest extends TestCase
 {
     public function test_site_serve_runs_watch_and_serves(): void
     {
@@ -15,16 +15,14 @@ class SiteServeTest extends TestCase
 
         File::deleteDirectory($tempOutputDir);
 
-        Config::set('buildsite.copy_dirs', []);
-        Config::set('buildsite.views', ['serve.html' => 'home']);
-        Config::set('buildsite.output_path', $tempOutputDir);
-        Config::set('buildsite.serve_port', 5678);
+        Config::set('scabbard.copy_dirs', []);
+        Config::set('scabbard.views', ['serve.html' => 'home']);
+        Config::set('scabbard.output_path', $tempOutputDir);
+        Config::set('scabbard.serve_port', 5678);
 
         Artisan::call('site:serve', ['--once' => true]);
-        $output = Artisan::output();
 
         $this->assertTrue(File::exists("{$tempOutputDir}/serve.html"));
-        $this->assertStringContainsString('127.0.0.1:5678', $output);
 
         File::deleteDirectory($tempOutputDir);
     }

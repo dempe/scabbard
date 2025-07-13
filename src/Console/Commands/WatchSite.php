@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Scabbard\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use App\Console\Commands\Concerns\WatchesFiles;
+use Scabbard\Console\Commands\Concerns\WatchesFiles;
 
 class WatchSite extends Command
 {
   use WatchesFiles;
 
-  protected $signature = 'scabbard:watch {--once}';
+  protected $signature = 'site:watch {--once}';
 
   protected $description = 'Watch for changes and rebuild the static site';
 
@@ -26,7 +26,7 @@ class WatchSite extends Command
       if ($lastHash !== $currentHash) {
         $lastHash = $currentHash;
         $this->info('[' . now()->format('H:i:s') . '] ' . 'Rebuilding...');
-        Artisan::call('scabbard:build', [], $this->output);
+        Artisan::call('site:build', [], $this->output);
       }
 
       $this->trap(SIGINT, function () {
