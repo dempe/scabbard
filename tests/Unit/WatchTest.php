@@ -16,8 +16,9 @@ class WatchTest extends TestCase
     File::deleteDirectory($tempOutputDir);
 
     Config::set('scabbard.copy_dirs', []);
-    Config::set('scabbard.views', ['watch.html' => 'home']);
+    Config::set('scabbard.routes', ['/watch' => 'watch.html']);
     Config::set('scabbard.output_path', $tempOutputDir);
+    app('router')->get('/watch', fn () => view('home'));
 
     Artisan::call('scabbard:watch', ['--once' => true]);
 
