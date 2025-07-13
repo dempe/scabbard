@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Unit;
+namespace Scabbard\Tests\Unit;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Tests\TestCase;
+use Scabbard\Tests\TestCase;
 
 class SiteServeTest extends TestCase
 {

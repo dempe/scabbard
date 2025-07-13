@@ -8,6 +8,11 @@
             "Dempe\\Scabbard\\": "src/"
         }
     },
+		"autoload-dev": {
+			"psr-4": {
+				"Scabbard\\Tests\\": "tests/"
+			}
+		},
     "authors": [
         {
             "name": "Christopher Dempewolf",
