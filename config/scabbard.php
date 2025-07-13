@@ -50,7 +50,6 @@ return [
     */
     'views' => [
         'index.html' => 'home',
-        'athena.html' => 'athena',
         '404.html'   => '404',
     ],
 
@@ -65,7 +64,6 @@ return [
     */
     'routes' => [
         '/'        => 'index.html',
-        '/athena'  => 'athena.html',
         '/404'     => '404.html',
     ],
 
