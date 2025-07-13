@@ -9,9 +9,18 @@
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $path = $_SERVER['DOCUMENT_ROOT'] . $uri;
 
-// Let the built-in server handle existing files.
-if ($uri !== '/' && file_exists($path)) {
+// Let the built-in server handle existing files but not directories.
+if ($uri !== '/' && is_file($path)) {
     return false;
+}
+
+// Serve index.html for directory-based routes like /blog/my-post
+if ($uri !== '/' && is_dir($path)) {
+    $indexFile = rtrim($path, '/\\') . '/index.html';
+    if (file_exists($indexFile)) {
+        readfile($indexFile);
+        return true;
+    }
 }
 
 // PHP does not automatically serve index.html for the root path

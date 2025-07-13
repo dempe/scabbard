@@ -34,7 +34,11 @@ class Serve extends Command
 
     $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
 
-    Artisan::call('scabbard:build', ['--watch' => true], $this->output);
+    if ($this->option('once')) {
+      Artisan::call('scabbard:build');
+    } else {
+      Artisan::call('scabbard:build', ['--watch' => true], $this->output);
+    }
 
     $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
 

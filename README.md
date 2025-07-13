@@ -30,6 +30,20 @@ php artisan vendor:publish --tag=scabbard-config
 
 Configs are in `config/scabbard.php`.
 
+### Directory-based Routing
+
+Scabbard assumes directory-based routing so a request like `/blog/my-post`
+will load the file `blog/my-post/index.html`.  Define your routes to point at
+`index.html` within each directory:
+
+```php
+'routes' => [
+    '/blog/my-post' => 'blog/my-post/index.html',
+],
+```
+
+This keeps URLs free of `.html` extensions for cleaner SEO‑friendly links.
+
 ## Additional Commands
 
 ### Build
