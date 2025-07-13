@@ -12,7 +12,7 @@ class Serve extends Command
 {
   use HasTimestampPrefix;
 
-  protected $signature = 'scabbard:serve {--once}';
+  protected $signature = 'scabbard:serve';
 
   protected $description = 'Watch the site and serve the built output';
 
@@ -33,12 +33,8 @@ class Serve extends Command
     $process->start();
 
     $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
-
-    if ($this->option('once')) {
-      Artisan::call('scabbard:build');
-    } else {
-      Artisan::call('scabbard:build', ['--watch' => true], $this->output);
-    }
+    
+    Artisan::call('scabbard:build', ['--watch' => true], $this->output);
 
     $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
 
