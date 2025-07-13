@@ -16,7 +16,7 @@ class Build extends Command
    *
    * @var string
    */
-  protected $signature = 'scabbard:build {--watch} {--once}';
+  protected $signature = 'scabbard:build {--watch}';
 
   /**
    * The console command description.
@@ -37,7 +37,9 @@ class Build extends Command
 
       $lastHash = null;
 
-      do {
+      // phpstan falsely reports the condition as always true but the loop is
+      // intentionally infinite until interrupted.
+      while (true) {
         $currentHash = $this->hashAllWatchedFiles();
 
         if ($lastHash !== $currentHash) {
@@ -52,9 +54,7 @@ class Build extends Command
         });
 
         usleep(500000);
-      } while (! $this->option('once'));
-
-      return;
+      }
     }
 
     $this->buildSite();
