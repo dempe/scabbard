@@ -20,7 +20,7 @@ class WatchTest extends TestCase
     Config::set('scabbard.output_path', $tempOutputDir);
     app('router')->get('/watch', fn () => view('home'));
 
-    Artisan::call('scabbard:build', ['--watch' => true, '--once' => true]);
+    Artisan::call('scabbard:build');
 
     $this->assertTrue(File::exists("{$tempOutputDir}/watch.html"));
 

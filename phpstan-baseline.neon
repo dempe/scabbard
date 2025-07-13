@@ -35,6 +35,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: src/Console/Commands/Build.php
+		
+		-
+			message: '#^While loop condition is always true\.$#'
+			identifier: while.alwaysTrue
+			count: 1
+			path: src/Console/Commands/Build.php
 
 		-
 			message: '#^Method Scabbard\\Console\\Commands\\Serve\:\:handle\(\) has no return type specified\.$#'
