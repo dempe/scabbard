@@ -21,8 +21,10 @@ class Serve extends Command
     $router = base_path('serve_router.php');
     $process = new Process([
       'php',
-      '-S', "127.0.0.1:{$port}",
-      '-t', $outputPath,
+      '-S',
+      "127.0.0.1:{$port}",
+      '-t',
+      $outputPath,
       $router,
     ]);
     $process->start();

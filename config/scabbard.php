@@ -1,7 +1,7 @@
 <?php
 
 return [
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Directories to Watch
     |--------------------------------------------------------------------------
@@ -10,13 +10,13 @@ return [
     | `php artisan scabbard:build --watch`. Any change triggers a rebuild.
     |
     */
-    'watch_dirs' => [
-        base_path('resources'),
-        base_path('app'),
-        base_path('public'),
-    ],
+  'watch_dirs' => [
+    base_path('resources'),
+    base_path('app'),
+    base_path('public'),
+  ],
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Output Directory
     |--------------------------------------------------------------------------
@@ -24,9 +24,9 @@ return [
     | The location where the generated static files will be written.
     |
     */
-    'output_path' => base_path('output'),
+  'output_path' => base_path('output'),
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Directories to Copy
     |--------------------------------------------------------------------------
@@ -35,11 +35,11 @@ return [
     | before rendering the configured views.
     |
     */
-    'copy_dirs' => [
-        base_path('public'),
-    ],
+  'copy_dirs' => [
+    base_path('public'),
+  ],
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Views to Render
     |--------------------------------------------------------------------------
@@ -48,12 +48,12 @@ return [
     | and saved during the build process.
     |
     */
-    'views' => [
-        'index.html' => 'home',
-        '404.html'   => '404',
-    ],
+  'views' => [
+    'index.html' => 'home',
+    '404.html'   => '404',
+  ],
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Routes to Render
     |--------------------------------------------------------------------------
@@ -62,12 +62,12 @@ return [
     | Laravel's routing layer and saved to the specified file.
     |
     */
-    'routes' => [
-        '/'        => 'index.html',
-        '/404'     => '404.html',
-    ],
+  'routes' => [
+    '/'        => 'index.html',
+    '/404'     => '404.html',
+  ],
 
-    /*
+  /*
     |--------------------------------------------------------------------------
     | Local Development Server Port
     |--------------------------------------------------------------------------
@@ -76,5 +76,5 @@ return [
     | built‑in PHP server to preview the generated site locally.
     |
     */
-    'serve_port' => 8000,
+  'serve_port' => 8000,
 ];

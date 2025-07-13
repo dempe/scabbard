@@ -9,46 +9,46 @@ use Scabbard\Tests\TestCase;
 
 class BuildTest extends TestCase
 {
-    public function test_build_site_command_generates_static_files(): void
-    {
-        $tempInputDir = base_path('tests/tmp_public');
-        $tempOutputDir = base_path('tests/tmp_output');
+  public function test_build_site_command_generates_static_files(): void
+  {
+    $tempInputDir = base_path('tests/tmp_public');
+    $tempOutputDir = base_path('tests/tmp_output');
 
-        File::deleteDirectory($tempInputDir);
-        File::deleteDirectory($tempOutputDir);
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
 
-        File::ensureDirectoryExists($tempInputDir);
-        File::put("{$tempInputDir}/dummy.txt", 'dummy');
-        File::put("{$tempInputDir}/index.php", 'index');
+    File::ensureDirectoryExists($tempInputDir);
+    File::put("{$tempInputDir}/dummy.txt", 'dummy');
+    File::put("{$tempInputDir}/index.php", 'index');
 
-        Config::set('scabbard.copy_dirs', [$tempInputDir]);
-        Config::set('scabbard.views', ['test.html' => 'home']);
-        Config::set('scabbard.output_path', $tempOutputDir);
+    Config::set('scabbard.copy_dirs', [$tempInputDir]);
+    Config::set('scabbard.views', ['test.html' => 'home']);
+    Config::set('scabbard.output_path', $tempOutputDir);
 
-        Artisan::call('scabbard:build');
+    Artisan::call('scabbard:build');
 
-        $this->assertTrue(File::exists("{$tempOutputDir}/dummy.txt"));
-        $this->assertTrue(File::exists("{$tempOutputDir}/test.html"));
-        $this->assertFalse(File::exists("{$tempOutputDir}/index.php"));
+    $this->assertTrue(File::exists("{$tempOutputDir}/dummy.txt"));
+    $this->assertTrue(File::exists("{$tempOutputDir}/test.html"));
+    $this->assertFalse(File::exists("{$tempOutputDir}/index.php"));
 
-        File::deleteDirectory($tempInputDir);
-        File::deleteDirectory($tempOutputDir);
-    }
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+  }
 
-    public function test_build_site_command_handles_invalid_configuration(): void
-    {
-        $tempOutputDir = base_path('tests/tmp_output');
+  public function test_build_site_command_handles_invalid_configuration(): void
+  {
+    $tempOutputDir = base_path('tests/tmp_output');
 
-        File::deleteDirectory($tempOutputDir);
+    File::deleteDirectory($tempOutputDir);
 
-        Config::set('scabbard.copy_dirs', ['/missing-dir']);
-        Config::set('scabbard.views', ['bad.html' => 'missing-view']);
-        Config::set('scabbard.output_path', $tempOutputDir);
+    Config::set('scabbard.copy_dirs', ['/missing-dir']);
+    Config::set('scabbard.views', ['bad.html' => 'missing-view']);
+    Config::set('scabbard.output_path', $tempOutputDir);
 
-        Artisan::call('scabbard:build');
+    Artisan::call('scabbard:build');
 
-        $this->assertFalse(File::exists("{$tempOutputDir}/bad.html"));
+    $this->assertFalse(File::exists("{$tempOutputDir}/bad.html"));
 
-        File::deleteDirectory($tempOutputDir);
-    }
+    File::deleteDirectory($tempOutputDir);
+  }
 }
