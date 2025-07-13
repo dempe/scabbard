@@ -21,9 +21,9 @@ class BuildSiteTest extends TestCase
         File::put("{$tempInputDir}/dummy.txt", 'dummy');
         File::put("{$tempInputDir}/index.php", 'index');
 
-        Config::set('buildsite.copy_dirs', [$tempInputDir]);
-        Config::set('buildsite.views', ['test.html' => 'home']);
-        Config::set('buildsite.output_path', $tempOutputDir);
+        Config::set('scabbard.copy_dirs', [$tempInputDir]);
+        Config::set('scabbard.views', ['test.html' => 'home']);
+        Config::set('scabbard.output_path', $tempOutputDir);
 
         Artisan::call('site:build');
 
@@ -41,9 +41,9 @@ class BuildSiteTest extends TestCase
 
         File::deleteDirectory($tempOutputDir);
 
-        Config::set('buildsite.copy_dirs', ['/missing-dir']);
-        Config::set('buildsite.views', ['bad.html' => 'missing-view']);
-        Config::set('buildsite.output_path', $tempOutputDir);
+        Config::set('scabbard.copy_dirs', ['/missing-dir']);
+        Config::set('scabbard.views', ['bad.html' => 'missing-view']);
+        Config::set('scabbard.output_path', $tempOutputDir);
 
         Artisan::call('site:build');
 

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Scabbard\Tests\TestCase;
 
-class SiteWatchTest extends TestCase
+class WatchSiteTest extends TestCase
 {
     public function test_site_watch_triggers_build(): void
     {
@@ -15,9 +15,9 @@ class SiteWatchTest extends TestCase
 
         File::deleteDirectory($tempOutputDir);
 
-        Config::set('buildsite.copy_dirs', []);
-        Config::set('buildsite.views', ['watch.html' => 'home']);
-        Config::set('buildsite.output_path', $tempOutputDir);
+        Config::set('scabbard.copy_dirs', []);
+        Config::set('scabbard.views', ['watch.html' => 'home']);
+        Config::set('scabbard.output_path', $tempOutputDir);
 
         Artisan::call('site:watch', ['--once' => true]);
 

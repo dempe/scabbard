@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Concerns;
+namespace Scabbard\Console\Commands\Concerns;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -9,7 +9,7 @@ trait WatchesFiles
 {
   protected function hashAllWatchedFiles(): string
   {
-    $paths = Config::get('buildsite.watch_dirs');
+    $paths = Config::get('scabbard.watch_dirs');
     $buffer = [];
 
     foreach ($paths as $path) {

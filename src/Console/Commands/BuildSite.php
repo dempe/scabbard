@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Scabbard\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
@@ -16,7 +16,7 @@ class BuildSite extends Command
    *
    * @var string
    */
-  protected $signature = 'scabbard:build {--watch}';
+  protected $signature = 'site:build {--watch}';
 
   /**
    * The console command description.
@@ -33,7 +33,7 @@ class BuildSite extends Command
   public function handle()
   {
     if ($this->option('watch')) {
-      Artisan::call('scabbard:watch', [], $this->output);
+      Artisan::call('site:watch', [], $this->output);
       return;
     }
 
@@ -51,11 +51,11 @@ class BuildSite extends Command
     \Artisan::call('view:clear');
 
     // First, create the directory structure
-    $outputPath = Config::get('buildsite.output_path', base_path('output'));
+    $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $this->deleteAndCreate($outputPath);
 
     // Copy configured directories wholesale
-    $copyDirs = Config::get('buildsite.copy_dirs', [base_path('public')]);
+    $copyDirs = Config::get('scabbard.copy_dirs', [base_path('public')]);
     foreach ($copyDirs as $dir) {
       if (File::isDirectory($dir)) {
         File::copyDirectory($dir, $outputPath);
@@ -68,15 +68,20 @@ class BuildSite extends Command
       }
     }
 
-    $routes = Config::get('buildsite.routes', []);
+    $routes = Config::get('scabbard.routes', []);
     foreach ($routes as $uri => $filename) {
       $response = app()->handle(Request::create($uri));
       File::put("$outputPath/{$filename}", $response->getContent());
     }
 
-    $views = Config::get('buildsite.views', []);
+    $views = Config::get('scabbard.views', []);
     foreach ($views as $filename => $view) {
-      File::put("$outputPath/{$filename}", view($view)->render());
+      try {
+        File::put("$outputPath/{$filename}", view($view)->render());
+      } catch (\InvalidArgumentException $e) {
+        // Skip views that cannot be rendered
+        continue;
+      }
     }
 
     $this->info('[' . now()->format('H:i:s') . '] ' . "Site copied to: $outputPath");

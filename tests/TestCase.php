@@ -14,6 +14,7 @@ abstract class TestCase extends BaseTestCase
     protected function getEnvironmentSetUp($app)
     {
         $app['config']->set('scabbard.output_path', __DIR__.'/output');
+        $app['config']->set('view.paths', [__DIR__.'/views']);
     }
 }
 
