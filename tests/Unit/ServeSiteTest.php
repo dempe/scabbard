@@ -20,7 +20,7 @@ class ServeSiteTest extends TestCase
         Config::set('scabbard.output_path', $tempOutputDir);
         Config::set('scabbard.serve_port', 5678);
 
-        Artisan::call('site:serve', ['--once' => true]);
+        Artisan::call('scabbard:serve', ['--once' => true]);
 
         $this->assertTrue(File::exists("{$tempOutputDir}/serve.html"));
 

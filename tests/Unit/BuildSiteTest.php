@@ -25,7 +25,7 @@ class BuildSiteTest extends TestCase
         Config::set('scabbard.views', ['test.html' => 'home']);
         Config::set('scabbard.output_path', $tempOutputDir);
 
-        Artisan::call('site:build');
+        Artisan::call('scabbard:build');
 
         $this->assertTrue(File::exists("{$tempOutputDir}/dummy.txt"));
         $this->assertTrue(File::exists("{$tempOutputDir}/test.html"));
@@ -45,7 +45,7 @@ class BuildSiteTest extends TestCase
         Config::set('scabbard.views', ['bad.html' => 'missing-view']);
         Config::set('scabbard.output_path', $tempOutputDir);
 
-        Artisan::call('site:build');
+        Artisan::call('scabbard:build');
 
         $this->assertFalse(File::exists("{$tempOutputDir}/bad.html"));
 
