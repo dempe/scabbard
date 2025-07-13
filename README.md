@@ -44,6 +44,26 @@ will load the file `blog/my-post/index.html`.  Define your routes to point at
 
 This keeps URLs free of `.html` extensions for cleaner SEO‑friendly links.
 
+### Directories to Watch
+
+These directories trigger a new build if they're updated while you're running the server
+
+### Output Directory
+
+Where to build the static site to (default `./output`).
+
+### Directories to Copy
+
+These are directories that are copied wholesale into your configured output directory.  The default is simple `./public`.
+
+### Routes to Render
+
+This is a mapping of routes (defined in your app's `routes/web.php`) to their filenames in your configured output directory.
+
+### Server Port
+
+The port your server runs on (default `8000`).
+
 ## Additional Commands
 
 ### Build
