@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Scabbard\Console\Commands\Concerns\WatchesFiles;
+use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
 
 class Build extends Command
 {
   use WatchesFiles;
+  use HasTimestampPrefix;
   /**
    * The name and signature of the console command.
    *
@@ -33,7 +35,7 @@ class Build extends Command
   public function handle()
   {
     if ($this->option('watch')) {
-      $this->info('[' . now()->format('H:i:s') . '] ' . 'Watching for changes...');
+      $this->info($this->timestampPrefix() . 'Watching for changes...');
 
       $lastHash = null;
 
@@ -44,12 +46,12 @@ class Build extends Command
 
         if ($lastHash !== $currentHash) {
           $lastHash = $currentHash;
-          $this->info('[' . now()->format('H:i:s') . '] ' . 'Rebuilding...');
+          $this->info($this->timestampPrefix() . 'Rebuilding...');
           $this->buildSite();
         }
 
         $this->trap(SIGINT, function () {
-          $this->info('[' . now()->format('H:i:s') . '] ' . 'Watcher interrupted. Exiting.');
+          $this->info($this->timestampPrefix() . 'Watcher interrupted. Exiting.');
           exit;
         });
 
@@ -95,8 +97,8 @@ class Build extends Command
     }
 
 
-    $this->info('[' . now()->format('H:i:s') . '] ' . "Site copied to: $outputPath");
-    $this->info('[' . now()->format('H:i:s') . '] ' . 'Site build complete.');
+    $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
+    $this->info($this->timestampPrefix() . 'Site build complete.');
   }
 
   /**
