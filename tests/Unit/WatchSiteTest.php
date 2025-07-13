@@ -19,7 +19,7 @@ class WatchSiteTest extends TestCase
         Config::set('scabbard.views', ['watch.html' => 'home']);
         Config::set('scabbard.output_path', $tempOutputDir);
 
-        Artisan::call('site:watch', ['--once' => true]);
+        Artisan::call('scabbard:watch', ['--once' => true]);
 
         $this->assertTrue(File::exists("{$tempOutputDir}/watch.html"));
 

@@ -10,7 +10,7 @@ class WatchSite extends Command
 {
   use WatchesFiles;
 
-  protected $signature = 'site:watch {--once}';
+  protected $signature = 'scabbard:watch {--once}';
 
   protected $description = 'Watch for changes and rebuild the static site';
 
@@ -26,7 +26,7 @@ class WatchSite extends Command
       if ($lastHash !== $currentHash) {
         $lastHash = $currentHash;
         $this->info('[' . now()->format('H:i:s') . '] ' . 'Rebuilding...');
-        Artisan::call('site:build', [], $this->output);
+        Artisan::call('scabbard:build', [], $this->output);
       }
 
       $this->trap(SIGINT, function () {

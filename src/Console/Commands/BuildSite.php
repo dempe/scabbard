@@ -16,7 +16,7 @@ class BuildSite extends Command
    *
    * @var string
    */
-  protected $signature = 'site:build {--watch}';
+  protected $signature = 'scabbard:build {--watch}';
 
   /**
    * The console command description.
@@ -33,7 +33,7 @@ class BuildSite extends Command
   public function handle()
   {
     if ($this->option('watch')) {
-      Artisan::call('site:watch', [], $this->output);
+      Artisan::call('scabbard:watch', [], $this->output);
       return;
     }
 

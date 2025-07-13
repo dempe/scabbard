@@ -7,7 +7,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | These directories will be monitored for changes when running
-    | `php artisan site:build --watch`. Any change triggers a rebuild.
+    | `php artisan scabbard:build --watch`. Any change triggers a rebuild.
     |
     */
     'watch_dirs' => [
@@ -74,7 +74,7 @@ return [
     | Local Development Server Port
     |--------------------------------------------------------------------------
     |
-    | The `site:serve` Artisan command will use this port when starting the
+    | The `scabbard:serve` Artisan command will use this port when starting the
     | built‑in PHP server to preview the generated site locally.
     |
     */
