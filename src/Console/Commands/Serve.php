@@ -28,6 +28,10 @@ class Serve extends Command
     $port = Config::get('scabbard.serve_port', 8000);
 
     $router = base_path('router.php');
+
+    if (! file_exists($router)) {
+      $router = realpath(__DIR__ . '/../../../router.php');
+    }
     $process = new Process([
       'php',
       '-S',
