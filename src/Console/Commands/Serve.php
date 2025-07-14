@@ -18,6 +18,11 @@ class Serve extends Command
 
   public function handle()
   {
+    if (! file_exists(config_path('scabbard.php'))) {
+      $this->error('Scabbard config not found. Run: php artisan vendor:publish --tag=scabbard-config');
+      return Command::FAILURE;
+    }
+
     $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $port = Config::get('scabbard.serve_port', 8000);
 

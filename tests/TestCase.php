@@ -16,6 +16,16 @@ abstract class TestCase extends BaseTestCase
     return [\Scabbard\ScabbardServiceProvider::class];
   }
 
+  protected function setUp(): void
+  {
+    parent::setUp();
+    $configFile = base_path('config/scabbard.php');
+    \Illuminate\Support\Facades\File::ensureDirectoryExists(dirname($configFile));
+    if (! file_exists($configFile)) {
+      file_put_contents($configFile, "<?php return [];\n");
+    }
+  }
+
   protected function getEnvironmentSetUp($app)
   {
     $app['config']->set('scabbard.output_path', __DIR__ . '/output');
