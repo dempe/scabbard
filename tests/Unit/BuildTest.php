@@ -5,6 +5,7 @@ namespace Scabbard\Tests\Unit;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
+use Illuminate\Console\Command;
 use Scabbard\Tests\TestCase;
 
 class BuildTest extends TestCase
@@ -46,9 +47,10 @@ class BuildTest extends TestCase
     Config::set('scabbard.routes', ['/bad-route' => 'bad.html']);
     Config::set('scabbard.output_path', $tempOutputDir);
 
-    Artisan::call('scabbard:build');
+    $result = Artisan::call('scabbard:build');
 
-    $this->assertTrue(File::exists("{$tempOutputDir}/bad.html"));
+    $this->assertSame(Command::FAILURE, $result);
+    $this->assertFalse(File::exists("{$tempOutputDir}/bad.html"));
 
     File::deleteDirectory($tempOutputDir);
   }
