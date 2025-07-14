@@ -40,34 +40,31 @@ class Build extends Command
       return Command::FAILURE;
     }
 
-    if ($this->option('watch')) {
-      $this->info($this->timestampPrefix() . 'Watching for changes...');
-
-      $lastHash = null;
-
-      // phpstan falsely reports the condition as always true but the loop is
-      // intentionally infinite until interrupted.
-      while (true) {
-        $currentHash = $this->hashAllWatchedFiles();
-
-        if ($lastHash !== $currentHash) {
-          $lastHash = $currentHash;
-          $this->info($this->timestampPrefix() . 'Rebuilding...');
-          if (! $this->buildSite()) {
-            return Command::FAILURE;
-          }
-        }
-
-        $this->trap(SIGINT, function () {
-          $this->info($this->timestampPrefix() . 'Watcher interrupted. Exiting.');
-          exit;
-        });
-
-        usleep(500000);
-      }
+    if (! $this->option('watch')) {
+      $this->buildSite();
     }
 
-    return $this->buildSite() ? Command::SUCCESS : Command::FAILURE;
+    $this->info($this->timestampPrefix() . 'Watching for changes...');
+
+    $lastHash = null;
+
+    // phpstan falsely reports the condition as always true but the loop is
+    // intentionally infinite until interrupted.
+    while (true) {
+      $currentHash = $this->hashAllWatchedFiles();
+
+      if ($lastHash !== $currentHash) {
+        $lastHash = $currentHash;
+        $this->info($this->timestampPrefix() . 'Rebuilding...');
+      }
+
+      $this->trap(SIGINT, function () {
+        $this->info($this->timestampPrefix() . 'Watcher interrupted. Exiting.');
+        exit;
+      });
+
+      usleep(500000);
+    }
   }
 
   /**
@@ -99,28 +96,24 @@ class Build extends Command
     }
 
     $routes = Config::get('scabbard.routes', []);
-    $failed = false;
     foreach ($routes as $uri => $filename) {
       try {
         $response = app()->handle(Request::create($uri));
+
         if ($response->getStatusCode() >= 400) {
           $this->error($this->timestampPrefix() . "Route {$uri} failed with status " . $response->getStatusCode());
-          $failed = true;
           continue;
         }
 
         File::put("$outputPath/{$filename}", $response->getContent());
       } catch (\Throwable $e) {
         $this->error($this->timestampPrefix() . "Exception rendering {$uri}: " . $e->getMessage());
-        $failed = true;
       }
     }
 
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
-
-    return ! $failed;
   }
 
   /**
