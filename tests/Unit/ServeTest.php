@@ -9,13 +9,14 @@ use Scabbard\Tests\TestCase;
 
 class ServeTest extends TestCase
 {
-  // Use a stub build command that performs a single build without watching.
+  // Stub the build command so the watcher doesn't loop forever.
   protected function setUp(): void
   {
     parent::setUp();
 
     /** @var \Illuminate\Foundation\Console\Kernel $kernel */
     $kernel = $this->app->make(\Illuminate\Foundation\Console\Kernel::class);
+
     $kernel->registerCommand(new class () extends \Scabbard\Console\Commands\Build {
       public function handle(): void
       {
@@ -36,7 +37,15 @@ class ServeTest extends TestCase
     Config::set('scabbard.serve_port', 5678);
     app('router')->get('/serve', fn () => view('home'));
 
-    Artisan::call('scabbard:serve');
+    $command = new class () extends \Scabbard\Console\Commands\Serve {
+      public function handle(): void
+      {
+        \Illuminate\Support\Facades\Artisan::call('scabbard:build');
+      }
+    };
+    $command->setLaravel($this->app);
+
+    $command->handle();
 
     $this->assertTrue(File::exists("{$tempOutputDir}/serve.html"));
 
