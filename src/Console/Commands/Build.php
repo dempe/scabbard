@@ -53,7 +53,9 @@ class Build extends Command
         if ($lastHash !== $currentHash) {
           $lastHash = $currentHash;
           $this->info($this->timestampPrefix() . 'Rebuilding...');
-          $this->buildSite();
+          if (! $this->buildSite()) {
+            return Command::FAILURE;
+          }
         }
 
         $this->trap(SIGINT, function () {
@@ -65,7 +67,7 @@ class Build extends Command
       }
     }
 
-    $this->buildSite();
+    return $this->buildSite() ? Command::SUCCESS : Command::FAILURE;
   }
 
   /**
@@ -97,14 +99,28 @@ class Build extends Command
     }
 
     $routes = Config::get('scabbard.routes', []);
+    $failed = false;
     foreach ($routes as $uri => $filename) {
-      $response = app()->handle(Request::create($uri));
-      File::put("$outputPath/{$filename}", $response->getContent());
+      try {
+        $response = app()->handle(Request::create($uri));
+        if ($response->getStatusCode() >= 400) {
+          $this->error($this->timestampPrefix() . "Route {$uri} failed with status " . $response->getStatusCode());
+          $failed = true;
+          continue;
+        }
+
+        File::put("$outputPath/{$filename}", $response->getContent());
+      } catch (\Throwable $e) {
+        $this->error($this->timestampPrefix() . "Exception rendering {$uri}: " . $e->getMessage());
+        $failed = true;
+      }
     }
 
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
+
+    return ! $failed;
   }
 
   /**
