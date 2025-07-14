@@ -42,6 +42,7 @@ class Build extends Command
 
     if (! $this->option('watch')) {
       $this->buildSite();
+      return Command::SUCCESS;
     }
 
     $this->info($this->timestampPrefix() . 'Watching for changes...');
@@ -56,6 +57,7 @@ class Build extends Command
       if ($lastHash !== $currentHash) {
         $lastHash = $currentHash;
         $this->info($this->timestampPrefix() . 'Rebuilding...');
+        $this->buildSite();
       }
 
       $this->trap(SIGINT, function () {
