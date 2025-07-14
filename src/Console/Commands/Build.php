@@ -34,6 +34,11 @@ class Build extends Command
    */
   public function handle()
   {
+    if (! file_exists(config_path('scabbard.php'))) {
+      $this->error('Scabbard config not found. Run: php artisan vendor:publish --tag=scabbard-config');
+      return Command::FAILURE;
+    }
+
     if ($this->option('watch')) {
       $this->info($this->timestampPrefix() . 'Watching for changes...');
 
