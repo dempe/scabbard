@@ -26,6 +26,9 @@ composer require dempe/scabbard --dev
 php artisan vendor:publish --tag=scabbard-config
 ```
 
+Scabbard requires a Laravel 10 or 11 installation. Composer will install the
+necessary `illuminate/*` packages that match your framework version.
+
 ## Configuration
 
 Configs are in `config/scabbard.php`.
