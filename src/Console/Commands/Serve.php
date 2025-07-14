@@ -6,11 +6,13 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
+use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
 use Symfony\Component\Process\Process;
 
 class Serve extends Command
 {
   use HasTimestampPrefix;
+  use RequiresScabbardConfig;
 
   protected $signature = 'scabbard:serve';
 
@@ -18,8 +20,7 @@ class Serve extends Command
 
   public function handle()
   {
-    if (! file_exists(config_path('scabbard.php'))) {
-      $this->error('Scabbard config not found. Run: php artisan vendor:publish --tag=scabbard-config');
+    if (! $this->ensureScabbardConfigExists()) {
       return Command::FAILURE;
     }
 

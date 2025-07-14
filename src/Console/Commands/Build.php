@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
 use Scabbard\Console\Commands\Concerns\WatchesFiles;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
+use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
 
 class Build extends Command
 {
   use WatchesFiles;
   use HasTimestampPrefix;
+  use RequiresScabbardConfig;
   /**
    * The name and signature of the console command.
    *
@@ -34,8 +36,7 @@ class Build extends Command
    */
   public function handle()
   {
-    if (! file_exists(config_path('scabbard.php'))) {
-      $this->error('Scabbard config not found. Run: php artisan vendor:publish --tag=scabbard-config');
+    if (! $this->ensureScabbardConfigExists()) {
       return Command::FAILURE;
     }
 
