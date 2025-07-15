@@ -54,4 +54,27 @@ class BuildTest extends TestCase
 
     File::deleteDirectory($tempOutputDir);
   }
+
+  public function test_build_site_creates_directories_for_routes(): void
+  {
+    $tempInputDir = base_path('tests/tmp_public');
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+
+    File::ensureDirectoryExists($tempInputDir);
+
+    Config::set('scabbard.copy_dirs', [$tempInputDir]);
+    Config::set('scabbard.routes', ['/athena' => 'athena/index.html']);
+    Config::set('scabbard.output_path', $tempOutputDir);
+    app('router')->get('/athena', fn () => view('home'));
+
+    Artisan::call('scabbard:build');
+
+    $this->assertTrue(File::exists("{$tempOutputDir}/athena/index.html"));
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+  }
 }
