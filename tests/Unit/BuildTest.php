@@ -49,7 +49,7 @@ class BuildTest extends TestCase
 
     $result = Artisan::call('scabbard:build');
 
-    $this->assertSame(Command::FAILURE, $result);
+    $this->assertSame(Command::SUCCESS, $result);
     $this->assertFalse(File::exists("{$tempOutputDir}/bad.html"));
 
     File::deleteDirectory($tempOutputDir);

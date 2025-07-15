@@ -13,7 +13,8 @@ $path = $_SERVER['DOCUMENT_ROOT'] . $uri;
 function serveNotFound(): void
 {
   http_response_code(404);
-  $notFoundPath = $_SERVER['DOCUMENT_ROOT'] . '/404.html';
+  $custom404 = getenv('SCABBARD_NOT_FOUND') ?: '/404.html';
+  $notFoundPath = $_SERVER['DOCUMENT_ROOT'] . $custom404;
 
   if (file_exists($notFoundPath)) {
     readfile($notFoundPath);

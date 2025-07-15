@@ -67,6 +67,11 @@ This is a mapping of routes (defined in your app's `routes/web.php`) to their fi
 
 The port your server runs on (default `8000`).
 
+### 404 Page
+
+Path to the `404` page relative to your output directory. This is served when
+no matching file is found while running `scabbard:serve` (default `/404.html`).
+
 ## Additional Commands
 
 ### Build
