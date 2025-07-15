@@ -55,6 +55,18 @@ return [
 
   /*
     |--------------------------------------------------------------------------
+    | Not Found Page
+    |--------------------------------------------------------------------------
+    |
+    | The relative path to the 404 page within your generated output
+    | directory.  This file will be served whenever a requested resource
+    | cannot be found while running `scabbard:serve`.
+    |
+    */
+  'not_found_page' => '/404.html',
+
+  /*
+    |--------------------------------------------------------------------------
     | Local Development Server Port
     |--------------------------------------------------------------------------
     |

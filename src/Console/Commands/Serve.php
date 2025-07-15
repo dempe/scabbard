@@ -26,6 +26,7 @@ class Serve extends Command
 
     $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $port = Config::get('scabbard.serve_port', 8000);
+    $notFound = Config::get('scabbard.not_found_page', '/404.html');
 
     $router = base_path('router.php');
 
@@ -39,7 +40,7 @@ class Serve extends Command
       '-t',
       $outputPath,
       $router,
-    ]);
+    ], null, ['SCABBARD_NOT_FOUND' => $notFound]);
     $process->start();
 
     $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
