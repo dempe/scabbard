@@ -107,7 +107,9 @@ class Build extends Command
           continue;
         }
 
-        File::put("$outputPath/{$filename}", $response->getContent());
+        $filePath = $outputPath . DIRECTORY_SEPARATOR . ltrim($filename, DIRECTORY_SEPARATOR);
+        File::ensureDirectoryExists(dirname($filePath));
+        File::put($filePath, $response->getContent());
       } catch (\Throwable $e) {
         $this->error($this->timestampPrefix() . "Exception rendering {$uri}: " . $e->getMessage());
       }
