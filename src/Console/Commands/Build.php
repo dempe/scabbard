@@ -117,22 +117,8 @@ class Build extends Command
 
     $dynamicRoutes = Config::get('scabbard.dynamic_routes', []);
     foreach ($dynamicRoutes as $routePattern => $config) {
-      $outputPattern = null;
-      $callback = null;
-
-      if (is_array($config)) {
-        $outputPattern = $config['output'] ?? null;
-        $callback = $config['values'] ?? null;
-      } else {
-        $outputPattern = $routePattern;
-        $callback = $config;
-
-        if (str_ends_with($routePattern, '/index.html')) {
-          $routePattern = substr($routePattern, 0, -10);
-        } elseif (str_ends_with($routePattern, '.html')) {
-          $routePattern = substr($routePattern, 0, -5);
-        }
-      }
+      $outputPattern = $config['output'];
+      $callback =  $config['values'];
 
       if (! is_callable($callback) || ! is_string($outputPattern)) {
         $this->error($this->timestampPrefix() . "Dynamic route {$routePattern} is not callable or missing output path.");
@@ -142,6 +128,7 @@ class Build extends Command
       $items = $callback();
       if (! is_iterable($items)) {
         $this->error($this->timestampPrefix() . "Callback for dynamic route {$routePattern} does not produce iterable output.");
+        continue;
       }
 
       preg_match_all('/\{([^}]+)\}/', $routePattern, $matches);
