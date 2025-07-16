@@ -122,10 +122,14 @@ class Build extends Command
         continue;
       }
 
+      $items = $callback();
+      if (! is_iterable($items)) {
+        $this->error($this->timestampPrefix() . "Callback {$callback} for dynamic route {$pattern} does not produce iterable output.");
+      }
+
       preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
       $variables = $matches[1];
 
-      $items = $callback();
       foreach ($items as $item) {
         if (count($variables) === 1 && ! is_array($item)) {
           $params = [$variables[0] => $item];
