@@ -91,7 +91,10 @@ class BuildTest extends TestCase
     Config::set('scabbard.copy_dirs', [$tempInputDir]);
     Config::set('scabbard.routes', []);
     Config::set('scabbard.dynamic_routes', [
-      '/posts/{slug}/index.html' => fn () => ['alpha', 'beta'],
+      '/posts/{slug}' => [
+        'output' => '/posts/{slug}/index.html',
+        'values' => fn () => ['alpha', 'beta'],
+      ],
     ]);
     Config::set('scabbard.output_path', $tempOutputDir);
 
