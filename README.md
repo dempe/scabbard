@@ -63,6 +63,18 @@ These are directories that are copied wholesale into your configured output dire
 
 This is a mapping of routes (defined in your app's `routes/web.php`) to their filenames in your configured output directory.
 
+### Dynamic Routes
+
+Dynamic routes allow generating multiple pages from a single route pattern. Define `dynamic_routes` in your `scabbard.php` config with a mapping of output file patterns to a closure that returns the placeholder values. For example:
+
+```php
+'dynamic_routes' => [
+    '/posts/{slug}/index.html' => fn () => App\Models\Post::pluck('slug'),
+],
+```
+
+The closure should return an iterable of values. When building, each value replaces the `{slug}` placeholder to produce both the request URI and output file path.
+
 ### Server Port
 
 The port your server runs on (default `8000`).

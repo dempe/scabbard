@@ -77,4 +77,32 @@ class BuildTest extends TestCase
     File::deleteDirectory($tempInputDir);
     File::deleteDirectory($tempOutputDir);
   }
+
+  public function test_build_site_handles_dynamic_routes(): void
+  {
+    $tempInputDir = base_path('tests/tmp_public');
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+
+    File::ensureDirectoryExists($tempInputDir);
+
+    Config::set('scabbard.copy_dirs', [$tempInputDir]);
+    Config::set('scabbard.routes', []);
+    Config::set('scabbard.dynamic_routes', [
+      '/posts/{slug}/index.html' => fn () => ['alpha', 'beta'],
+    ]);
+    Config::set('scabbard.output_path', $tempOutputDir);
+
+    app('router')->get('/posts/{slug}', fn ($slug) => view('home'));
+
+    Artisan::call('scabbard:build');
+
+    $this->assertTrue(File::exists("{$tempOutputDir}/posts/alpha/index.html"));
+    $this->assertTrue(File::exists("{$tempOutputDir}/posts/beta/index.html"));
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+  }
 }
