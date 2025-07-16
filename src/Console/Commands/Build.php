@@ -116,18 +116,35 @@ class Build extends Command
     }
 
     $dynamicRoutes = Config::get('scabbard.dynamic_routes', []);
-    foreach ($dynamicRoutes as $pattern => $callback) {
-      if (! is_callable($callback)) {
-        $this->error($this->timestampPrefix() . "Dynamic route {$pattern} is not callable.");
+    foreach ($dynamicRoutes as $routePattern => $config) {
+      $outputPattern = null;
+      $callback = null;
+
+      if (is_array($config)) {
+        $outputPattern = $config['output'] ?? null;
+        $callback = $config['values'] ?? null;
+      } else {
+        $outputPattern = $routePattern;
+        $callback = $config;
+
+        if (str_ends_with($routePattern, '/index.html')) {
+          $routePattern = substr($routePattern, 0, -10);
+        } elseif (str_ends_with($routePattern, '.html')) {
+          $routePattern = substr($routePattern, 0, -5);
+        }
+      }
+
+      if (! is_callable($callback) || ! is_string($outputPattern)) {
+        $this->error($this->timestampPrefix() . "Dynamic route {$routePattern} is not callable or missing output path.");
         continue;
       }
 
       $items = $callback();
       if (! is_iterable($items)) {
-        $this->error($this->timestampPrefix() . "Callback {$callback} for dynamic route {$pattern} does not produce iterable output.");
+        $this->error($this->timestampPrefix() . "Callback for dynamic route {$routePattern} does not produce iterable output.");
       }
 
-      preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
+      preg_match_all('/\{([^}]+)\}/', $routePattern, $matches);
       $variables = $matches[1];
 
       foreach ($items as $item) {
@@ -136,20 +153,15 @@ class Build extends Command
         } elseif (is_array($item)) {
           $params = array_combine($variables, array_values($item));
         } else {
-          $this->error($this->timestampPrefix() . "Dynamic route {$pattern} has invalid parameters.");
+          $this->error($this->timestampPrefix() . "Dynamic route {$routePattern} has invalid parameters.");
           continue;
         }
 
-        $filePath = $pattern;
+        $uri = $routePattern;
+        $filePath = $outputPattern;
         foreach ($params as $var => $val) {
+          $uri = str_replace('{' . $var . '}', $val, $uri);
           $filePath = str_replace('{' . $var . '}', $val, $filePath);
-        }
-
-        $uri = $filePath;
-        if (str_ends_with($uri, '/index.html')) {
-          $uri = substr($uri, 0, -10);
-        } elseif (str_ends_with($uri, '.html')) {
-          $uri = substr($uri, 0, -5);
         }
 
         try {
