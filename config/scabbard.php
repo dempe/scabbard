@@ -55,6 +55,22 @@ return [
 
   /*
     |--------------------------------------------------------------------------
+    | Dynamic Routes
+    |--------------------------------------------------------------------------
+    |
+    | Mapping of output paths containing placeholders to a closure that returns
+    | the values for those placeholders. The closure should return an iterable
+    | of values. When a single placeholder is used, scalar values are accepted.
+    | For multiple placeholders, return associative arrays keyed by placeholder
+    | name.
+    |
+    */
+  'dynamic_routes' => [
+    // '/posts/{slug}/index.html' => fn () => App\Models\Post::pluck('slug'),
+  ],
+
+  /*
+    |--------------------------------------------------------------------------
     | Not Found Page
     |--------------------------------------------------------------------------
     |

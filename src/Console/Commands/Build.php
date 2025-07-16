@@ -109,9 +109,59 @@ class Build extends Command
 
         $filePath = $outputPath . DIRECTORY_SEPARATOR . ltrim($filename, DIRECTORY_SEPARATOR);
         File::ensureDirectoryExists(dirname($filePath));
-        File::put($filePath, $response->getContent());
+        File::put($filePath, (string) $response->getContent());
       } catch (\Throwable $e) {
         $this->error($this->timestampPrefix() . "Exception rendering {$uri}: " . $e->getMessage());
+      }
+    }
+
+    $dynamicRoutes = Config::get('scabbard.dynamic_routes', []);
+    foreach ($dynamicRoutes as $pattern => $callback) {
+      if (! is_callable($callback)) {
+        $this->error($this->timestampPrefix() . "Dynamic route {$pattern} is not callable.");
+        continue;
+      }
+
+      preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
+      $variables = $matches[1];
+
+      $items = $callback();
+      foreach ($items as $item) {
+        if (count($variables) === 1 && ! is_array($item)) {
+          $params = [$variables[0] => $item];
+        } elseif (is_array($item)) {
+          $params = array_combine($variables, array_values($item));
+        } else {
+          $this->error($this->timestampPrefix() . "Dynamic route {$pattern} has invalid parameters.");
+          continue;
+        }
+
+        $filePath = $pattern;
+        foreach ($params as $var => $val) {
+          $filePath = str_replace('{' . $var . '}', $val, $filePath);
+        }
+
+        $uri = $filePath;
+        if (str_ends_with($uri, '/index.html')) {
+          $uri = substr($uri, 0, -10);
+        } elseif (str_ends_with($uri, '.html')) {
+          $uri = substr($uri, 0, -5);
+        }
+
+        try {
+          $response = app()->handle(Request::create($uri));
+
+          if ($response->getStatusCode() >= 400) {
+            $this->error($this->timestampPrefix() . "Route {$uri} failed with status " . $response->getStatusCode());
+            continue;
+          }
+
+          $outputFilePath = $outputPath . DIRECTORY_SEPARATOR . ltrim($filePath, DIRECTORY_SEPARATOR);
+          File::ensureDirectoryExists(dirname($outputFilePath));
+          File::put($outputFilePath, (string) $response->getContent());
+        } catch (\Throwable $e) {
+          $this->error($this->timestampPrefix() . "Exception rendering {$uri}: " . $e->getMessage());
+        }
       }
     }
 

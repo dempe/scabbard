@@ -30,11 +30,6 @@ parameters:
 			count: 1
 			path: src/Console/Commands/Build.php
 
-		-
-			message: '#^Parameter \#2 \$contents of static method Illuminate\\Support\\Facades\\File\:\:put\(\) expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Console/Commands/Build.php
 		
 		-
 			message: '#^While loop condition is always true\.$#'
