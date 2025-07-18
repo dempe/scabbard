@@ -204,13 +204,12 @@ class Build extends Command
     }
 
     return function () use ($class, $attribute) {
-      if (method_exists($class, 'pluck')) {
+      if (is_callable([$class, 'pluck'])) {
         return $class::pluck($attribute);
       }
-      else {
-        $this->error($this->timestampPrefix() . "Method `pluck` not found on model {$class}. Check your dynamic routes config.");
-        return [];
-      }
+
+      $this->error($this->timestampPrefix() . "Method `pluck` not found on model {$class}. Check your dynamic routes config.");
+      return [];
     };
   }
 
