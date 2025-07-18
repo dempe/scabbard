@@ -80,7 +80,7 @@ returns the values for the placeholders. For example:
 ```
 
 Specify the model class and attribute to pluck using the `Class@attribute`
-notation. During the build, Scabbard will pluck the attribute values and use
+notation. During the build, Scabbard will pluck the attribute values (e.g., `App\Models\Post::pluck('slug');`) and use
 each one to replace the `{slug}` placeholder, producing both the request URI and
 the output file path.
 
