@@ -14,6 +14,10 @@ $docRoot    = $_SERVER["DOCUMENT_ROOT"];
 $path       = parse_url($requestUri, PHP_URL_PATH);
 $file       = realpath($docRoot . $path);
 
+if (!defined('STDOUT')) {
+  define('STDOUT', fopen('php://stdout', 'w'));
+}
+
 function logRequest(string $method, string $path, int $status): void
 {
   $time = date('d/M/Y:H:i:s');
@@ -37,32 +41,32 @@ function serveNotFound(string $method, string $uri): void
 }
 
 // Let the built-in server handle existing files but not directories.
-if ($uri !== '/' && is_file($path)) {
-  logRequest($method, $uri, 200);
+if ($requestUri !== '/' && is_file($path)) {
+  logRequest($method, $requestUri, 200);
   return false;
 }
 
 // Serve index.html for directory-based routes like /blog/my-post
-if ($uri !== '/' && is_dir($path)) {
+if ($requestUri !== '/' && is_dir($path)) {
   $indexFile = rtrim($path, '/\\') . '/index.html';
   if (file_exists($indexFile)) {
     http_response_code(200);
     readfile($indexFile);
-    logRequest($method, $uri, 200);
+    logRequest($method, $requestUri, 200);
     return true;
   }
-  serveNotFound($method, $uri);
+  serveNotFound($method, $requestUri);
   return true;
 }
 
 // PHP does not automatically serve index.html for the root path
-if ($uri === '/' || $uri === '') {
+if ($requestUri === '/' || $requestUri === '') {
   http_response_code(200);
   readfile($_SERVER['DOCUMENT_ROOT'] . '/index.html');
-  logRequest($method, $uri, 200);
+  logRequest($method, $requestUri, 200);
   return true;
 }
 
 
 // Serve custom 404
-serveNotFound($method, $uri);
+serveNotFound($method, $requestUri);
