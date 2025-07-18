@@ -33,7 +33,7 @@ class Serve extends Command
     if (! file_exists($router)) {
       $router = realpath(__DIR__ . '/../../../router.php');
     }
-    $process = new Process([
+    $server = new Process([
       'php',
       '-S',
       "127.0.0.1:{$port}",
@@ -41,15 +41,31 @@ class Serve extends Command
       $outputPath,
       $router,
     ], null, ['SCABBARD_NOT_FOUND' => $notFound]);
-    $process->start();
+    $server->start();
+
+    $builder = new Process(['php', 'artisan', 'scabbard:build', '--watch']);
+    $builder->setTimeout(null);
+    $builder->start(function ($type, $buffer) {
+      echo $buffer;
+    });
 
     $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
 
-    Artisan::call('scabbard:build', ['--watch' => true], $this->output);
+    while ($builder->isRunning()) {
+      $out = $server->getIncrementalOutput();
+      if ($out !== '') {
+        $this->output->write($out);
+      }
 
-    $this->info($this->timestampPrefix() . 'Serving site on http://127.0.0.1:' . $port);
+      $err = $server->getIncrementalErrorOutput();
+      if ($err !== '') {
+        $this->output->write($err);
+      }
 
-    $process->stop();
+      usleep(100000);
+    }
+
+    $server->stop();
 
     $this->info($this->timestampPrefix() . 'Server stopped.');
   }
