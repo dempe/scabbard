@@ -118,7 +118,11 @@ class Build extends Command
     $dynamicRoutes = Config::get('scabbard.dynamic_routes', []);
     foreach ($dynamicRoutes as $routePattern => $config) {
       $outputPattern = $config['output'];
-      $callback =  $config['values'];
+      $callback = $config['values'];
+
+      if (is_string($callback)) {
+        $callback = $this->callbackFromString($callback);
+      }
 
       if (! is_callable($callback) || ! is_string($outputPattern)) {
         $this->error($this->timestampPrefix() . "Dynamic route {$routePattern} is not callable or missing output path.");
@@ -171,6 +175,37 @@ class Build extends Command
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
+  }
+
+  /**
+   * Create a values callback from a string specification.
+   *
+   * @param string $spec Class and attribute in `Class@attribute` form.
+   * @return callable|null
+   */
+  protected function callbackFromString(string $spec): ?callable
+  {
+    if (! str_contains($spec, '@')) {
+      return null;
+    }
+
+    [$class, $attribute] = explode('@', $spec, 2);
+
+    if ($class === '' || $attribute === '' || ! class_exists($class)) {
+      return null;
+    }
+
+    return function () use ($class, $attribute) {
+      if (method_exists($class, 'pluck')) {
+        return $class::pluck($attribute);
+      }
+
+      if (method_exists($class, 'query')) {
+        return $class::query()->pluck($attribute);
+      }
+
+      return [];
+    };
   }
 
   /**

@@ -93,7 +93,7 @@ class BuildTest extends TestCase
     Config::set('scabbard.dynamic_routes', [
       '/posts/{slug}' => [
         'output' => '/posts/{slug}/index.html',
-        'values' => fn () => ['alpha', 'beta'],
+        'values' => 'Scabbard\\Tests\\Fixtures\\Post@slug',
       ],
     ]);
     Config::set('scabbard.output_path', $tempOutputDir);

@@ -74,14 +74,15 @@ returns the values for the placeholders. For example:
 'dynamic_routes' => [
     '/posts/{slug}' => [
         'output' => '/posts/{slug}/index.html',
-        'values' => fn () => App\Models\Post::pluck('slug'),
+        'values' => 'App\\Models\\Post@slug',
     ],
 ],
 ```
 
-The callback should return an iterable of values. When building, each value
-replaces the `{slug}` placeholder to produce both the request URI and the output
-file path.
+Specify the model class and attribute to pluck using the `Class@attribute`
+notation. During the build, Scabbard will pluck the attribute values and use
+each one to replace the `{slug}` placeholder, producing both the request URI and
+the output file path.
 
 ### Server Port
 
