@@ -68,7 +68,7 @@ return [
   'dynamic_routes' => [
     // '/posts/{slug}' => [
     //   'output' => '/posts/{slug}/index.html',
-    //   'values' => fn () => App\Models\Post::pluck('slug'),
+    //   'values' => 'App\\Models\\Post@slug',
     // ],
   ],
 
