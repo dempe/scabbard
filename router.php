@@ -7,13 +7,18 @@
  * If so, it delegates to the built-in PHP server. Otherwise it serves the
  * generated `404.html` file with a 404 status code.
  */
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-$path = $_SERVER['DOCUMENT_ROOT'] . $uri;
+$requestUri = $_SERVER["REQUEST_URI"];
+$method     = $_SERVER["REQUEST_METHOD"];
+$status     = 200;
+$docRoot    = $_SERVER["DOCUMENT_ROOT"];
+$path       = parse_url($requestUri, PHP_URL_PATH);
+$file       = realpath($docRoot . $path);
 
-function logRequest(string $method, string $uri, int $status): void
+function logRequest(string $method, string $path, int $status): void
 {
-  file_put_contents('php://stderr', sprintf("%s %s %d\n", $method, $uri, $status));
+  $time = date('d/M/Y:H:i:s');
+  $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+  fprintf(STDOUT, "%s - - [%s] \"%s %s\" %d\n", $ip, $time, $method, $path, $status);
 }
 
 function serveNotFound(string $method, string $uri): void
