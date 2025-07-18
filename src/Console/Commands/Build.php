@@ -118,11 +118,7 @@ class Build extends Command
     $dynamicRoutes = Config::get('scabbard.dynamic_routes', []);
     foreach ($dynamicRoutes as $routePattern => $config) {
       $outputPattern = $config['output'];
-      $callback = $config['values'];
-
-      if (is_string($callback)) {
-        $callback = $this->callbackFromString($callback);
-      }
+      $callback = $this->callbackFromString($config['values']);
 
       if (! is_callable($callback) || ! is_string($outputPattern)) {
         $this->error($this->timestampPrefix() . "Dynamic route {$routePattern} is not callable or missing output path.");
@@ -186,12 +182,24 @@ class Build extends Command
   protected function callbackFromString(string $spec): ?callable
   {
     if (! str_contains($spec, '@')) {
+      $this->error($this->timestampPrefix() . "No attribute specified in callback {$spec}");
       return null;
     }
 
     [$class, $attribute] = explode('@', $spec, 2);
 
-    if ($class === '' || $attribute === '' || ! class_exists($class)) {
+    if ($class === '') {
+      $this->error($this->timestampPrefix() . "No class found in callback {$spec}");
+      return null;
+    }
+
+    if ($attribute === '')) {
+      $this->error($this->timestampPrefix() . "No attribute found in callback {$spec}");
+      return null;
+    }
+
+    if (! class_exists($class)) {
+      $this->error($this->timestampPrefix() . "Class {$class} does not exist. Callback = {$spec}");
       return null;
     }
 
