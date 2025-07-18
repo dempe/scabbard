@@ -198,7 +198,7 @@ class Build extends Command
       return null;
     }
 
-    if (! class_exists($class) {
+    if (! class_exists($class)) {
       $this->error($this->timestampPrefix() . "Class {$class} does not exist. Callback = {$spec}");
       return null;
     }
