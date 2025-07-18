@@ -182,24 +182,24 @@ class Build extends Command
   protected function callbackFromString(string $spec): ?callable
   {
     if (! str_contains($spec, '@')) {
-      $this->error($this->timestampPrefix() . "No attribute specified in callback {$spec}");
+      $this->error($this->timestampPrefix() . "No attribute specified in callback {$spec}. Check your dynamic routes config.");
       return null;
     }
 
     [$class, $attribute] = explode('@', $spec, 2);
 
     if ($class === '') {
-      $this->error($this->timestampPrefix() . "No class found in callback {$spec}");
+      $this->error($this->timestampPrefix() . "No class found in callback {$spec}. Check your dynamic routes config.");
       return null;
     }
 
     if ($attribute === '') {
-      $this->error($this->timestampPrefix() . "No attribute found in callback {$spec}");
+      $this->error($this->timestampPrefix() . "No attribute found in callback {$spec}. Check your dynamic routes config.");
       return null;
     }
 
     if (! class_exists($class)) {
-      $this->error($this->timestampPrefix() . "Class {$class} does not exist. Callback = {$spec}");
+      $this->error($this->timestampPrefix() . "Class {$class} does not exist. Callback = {$spec}. Check your dynamic routes  config.");
       return null;
     }
 
@@ -207,12 +207,10 @@ class Build extends Command
       if (method_exists($class, 'pluck')) {
         return $class::pluck($attribute);
       }
-
-      if (method_exists($class, 'query')) {
-        return $class::query()->pluck($attribute);
+      else {
+        $this->error($this->timestampPrefix() . "Method `pluck` not found on model {$class}. Check your dynamic routes config.");
+        return [];
       }
-
-      return [];
     };
   }
 
