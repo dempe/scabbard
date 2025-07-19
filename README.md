@@ -4,10 +4,10 @@ Scabbard is a minimalistic, deterministic (i.e., config-based) static site gener
 
 Features:
 
-- **File watching** – Monitors specified directories for changes
-- **Static builds** – Outputs your site to a target directory (`output/` by default)
-- **Hot rebuilding** – Rebuilds automagically when changes are detected
-- **Local server** – Serves the site locally on the port of your choice
+- **File watching** 👀  – Monitors specified directories for changes
+- **Static builds** 🔨  – Outputs your site to a target directory (`output/` by default)
+- **Hot rebuilding** 🔥 – Rebuilds automagically when changes are detected
+- **Local server** 🧑🏽‍💻   – Serves the site locally on the port of your choice
 
 All built in pure PHP.
 
@@ -17,7 +17,7 @@ Just run:
 php artisan scabbard:serve
 ```
 
-And you're off to the races!
+And you're off to the races! 🏇🏻
 
 ## Installation
 
