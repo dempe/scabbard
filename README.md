@@ -1,6 +1,6 @@
 # Scabbard ⚔️
 
-Scabbard is a minimalist static site generator (SSG) built on top of Laravel and Blade. It provides a zero-dependency workflow for generating static sites from your Laravel views.
+Scabbard is a minimalistic, deterministic (i.e., config-based) static site generator (SSG) built on top of Laravel and Blade. It provides a zero-dependency workflow for generating static sites from your Laravel views.
 
 Features:
 
@@ -26,18 +26,19 @@ composer require dempe/scabbard --dev
 php artisan vendor:publish --tag=scabbard-config
 ```
 
-Scabbard requires a Laravel 10 or 11 installation. Composer will install the
-necessary `illuminate/*` packages that match your framework version.
-
 ## Configuration
 
 Configs are in `config/scabbard.php`.
 
-### Directory-based Routing
+### Routes
 
-Scabbard assumes directory-based routing so a request like `/blog/my-post`
-will load the file `blog/my-post/index.html`.  Define your routes to point at
-`index.html` within each directory:
+Map of routes to output filenames.
+
+Each route (i.e., each key in the array) must be declared in a Laravel routes file. This is because Scabbard calls Laravel for each route allowing you to use controllers or other additional processing.
+
+Note: these are *static* routes (dynamic routes are handled separately).
+
+Example:
 
 ```php
 'routes' => [
@@ -45,30 +46,32 @@ will load the file `blog/my-post/index.html`.  Define your routes to point at
 ],
 ```
 
-This keeps URLs free of `.html` extensions for cleaner SEO‑friendly links.
-
 ### Directories to Watch
 
-These directories trigger a new build if they're updated while you're running the server
+These directories trigger a new build if they're updated while you're running the server.
+
+Default: `public`, `app`, `resources`.
 
 ### Output Directory
 
-Where to build the static site to (default `./output`).
+Where to build the static site.
+
+Default: `./output`.
 
 ### Directories to Copy
 
-These are directories that are copied wholesale into your configured output directory.  The default is simple `./public`.
+These are directories that are copied wholesale into your configured output directory.
 
-### Routes to Render
-
-This is a mapping of routes (defined in your app's `routes/web.php`) to their filenames in your configured output directory.
+Default: `./public`.
 
 ### Dynamic Routes
 
 Dynamic routes allow generating multiple pages from a single route pattern.
-Define `dynamic_routes` in your `scabbard.php` config with a mapping of the
+Define `dynamic_routes` in  `config/scabbard.php` with a mapping of the
 route pattern to an array containing the output path pattern and a callback that
-returns the values for the placeholders. For example:
+returns the values for the placeholders.
+
+Example:
 
 ```php
 'dynamic_routes' => [
@@ -79,27 +82,28 @@ returns the values for the placeholders. For example:
 ],
 ```
 
-Specify the model class and attribute to pluck using the `Class@attribute`
-notation. During the build, Scabbard will pluck the attribute values (e.g., `App\Models\Post::pluck('slug');`) and use
+Specify the *model* class and *attribute* to `pluck` using the `Class@attribute`
+notation. During the build, Scabbard will `pluck` the attribute values (e.g., `App\Models\Post::pluck('slug');`) and use
 each one to replace the `{slug}` placeholder, producing both the request URI and
 the output file path.
 
 ### Server Port
 
-The port your server runs on (default `8000`).
+The port your server runs on. 
+
+Default: `8000`.
 
 ### 404 Page
 
-Path to the `404` page relative to your output directory. This is served when
-no matching file is found while running `scabbard:serve` (default `/404.html`).
+The 404 page that `scabbard:serve` will use. The path should be relative to your output directory.
+
+Default:  `/404.html`.
 
 ## Additional Commands
 
 ### Build
 
-If you don't want to run the server, you can just produce the static output.
-
-This builds the site once and exits:
+This builds the site once and exits (useful for CICD):
 
 ```
 php artisan scabbard:build
