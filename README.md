@@ -1,6 +1,6 @@
 # Scabbard ⚔️
 
-Scabbard is a minimalistic, deterministic (i.e., config-based) static site generator (SSG) built on top of Laravel and Blade. It provides a zero-dependency workflow for generating static sites from your Laravel views.
+Scabbard is a deterministic (i.e., config-based) static site generator (SSG) built on top of Laravel and Blade. It provides a zero-dependency workflow for generating static sites from your Laravel views.
 
 Features:
 
