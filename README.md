@@ -30,7 +30,7 @@ php artisan vendor:publish --tag=scabbard-config
 
 Configs are in `config/scabbard.php`.
 
-### Routes
+### Static Routes
 
 Map of routes to output filenames.
 
@@ -43,6 +43,28 @@ Example:
 ```php
 'routes' => [
     '/blog/my-post' => 'blog/my-post/index.html',
+],
+```
+
+### Dynamic Routes
+
+Dynamic routes allow generating multiple pages from a single route pattern.
+
+Each dynamic route defined must map to:
+
+1. `output`: the name of the file you want the parsed view to be written to.
+2. `values`: Specify both a *model* and an *attribute* in `Class@attribute` notation.
+
+During the build, Scabbard will call `pluck` on the model for the specified attribute (e.g., `App\Models\Post::pluck('slug');`) and generate a new file for each.
+
+Example:
+
+```php
+'dynamic_routes' => [
+    '/posts/{slug}' => [
+        'output' => '/posts/{slug}/index.html',
+        'values' => 'App\\Models\\Post@slug',
+    ],
 ],
 ```
 
@@ -63,29 +85,6 @@ Default: `./output`.
 These are directories that are copied wholesale into your configured output directory.
 
 Default: `./public`.
-
-### Dynamic Routes
-
-Dynamic routes allow generating multiple pages from a single route pattern.
-Define `dynamic_routes` in  `config/scabbard.php` with a mapping of the
-route pattern to an array containing the output path pattern and a callback that
-returns the values for the placeholders.
-
-Example:
-
-```php
-'dynamic_routes' => [
-    '/posts/{slug}' => [
-        'output' => '/posts/{slug}/index.html',
-        'values' => 'App\\Models\\Post@slug',
-    ],
-],
-```
-
-Specify the *model* class and *attribute* to `pluck` using the `Class@attribute`
-notation. During the build, Scabbard will `pluck` the attribute values (e.g., `App\Models\Post::pluck('slug');`) and use
-each one to replace the `{slug}` placeholder, producing both the request URI and
-the output file path.
 
 ### Server Port
 
