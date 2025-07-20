@@ -11,7 +11,7 @@ Features:
 
 All built in pure PHP.
 
-Just run:
+To start the dev server, run:
 
 ```
 php artisan scabbard:serve
