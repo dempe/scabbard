@@ -42,7 +42,7 @@ Example:
 
 ```php
 'routes' => [
-    '/blog/my-post' => 'blog/my-post/index.html',
+    '/blog/about' => 'blog/about/index.html',
 ],
 ```
 
