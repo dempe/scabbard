@@ -34,7 +34,7 @@ Configs are in `config/scabbard.php`.
 
 Map of routes to output filenames.
 
-Each route (i.e., each key in the array) must be declared in a Laravel routes file. This is because Scabbard calls Laravel for each route allowing you to use controllers or other additional processing.
+Each route (i.e., each key in the array) must be declared in a Laravel routes file (e.g., `routes/web.php`). This is because Scabbard calls Laravel for each route allowing you to use controllers or other additional processing.
 
 Note: these are *static* routes (dynamic routes are handled separately).
 
