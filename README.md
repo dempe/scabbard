@@ -38,7 +38,7 @@ Each route (i.e., each key in the array) must be declared in a Laravel routes fi
 
 Note: these are *static* routes (dynamic routes are handled separately).
 
-Example:
+**Example**:
 
 ```php
 'routes' => [
@@ -57,7 +57,7 @@ Each dynamic route defined must map to:
 
 During the build, Scabbard will call `pluck` on the model for the specified attribute (e.g., `App\Models\Post::pluck('slug');`) and generate a new file for each.
 
-Example:
+**Example**:
 
 ```php
 'dynamic_routes' => [
@@ -72,31 +72,31 @@ Example:
 
 These directories trigger a new build if they're updated while you're running the server.
 
-Default: `public`, `app`, `resources`.
+**Default**: `public`, `app`, `resources`.
 
 ### Output Directory
 
 Where to build the static site.
 
-Default: `./output`.
+**Default**: `./output`.
 
 ### Directories to Copy
 
 These are directories that are copied wholesale into your configured output directory.
 
-Default: `./public`.
+**Default**: `./public`.
 
 ### Server Port
 
 The port your server runs on. 
 
-Default: `8000`.
+**Default**: `8000`.
 
 ### 404 Page
 
 The 404 page that `scabbard:serve` will use. The path should be relative to your output directory.
 
-Default:  `/404.html`.
+**Default**:  `/404.html`.
 
 ## Additional Commands
 
@@ -137,4 +137,5 @@ to analyze the codebase.
 - [ ] Frontmatter parsing
 - [ ] Syntax highlighting
 - [ ] Deployment
+- [ ] (Maybe) Add option to render raw views directly without going through app (useful if you have a set of pure Blade templates)
 
