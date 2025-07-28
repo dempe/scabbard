@@ -50,7 +50,6 @@ return [
   'routes' => [
     '/'        => 'index.html',
     '/404'     => '404/index.html',
-    '/posts/{post}' => 'posts/{post}/index.html',
   ],
 
   /*
