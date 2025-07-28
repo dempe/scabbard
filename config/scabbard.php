@@ -57,11 +57,13 @@ return [
     | Dynamic Routes
     |--------------------------------------------------------------------------
     |
-    | Mapping of route patterns containing placeholders to an array with an
-    | `output` path and a `values` callback that returns the values for those
-    | placeholders. The callback should return an iterable. When a single
-    | placeholder is used, scalar values are accepted. For multiple
-    | placeholders, return associative arrays keyed by placeholder name.
+    | Generate multiple pages from a single route pattern.
+    | 
+    | Each dynamic route defined must map to:
+    | output: the name of the file you want the parsed view to be written to.
+    | values: Specify both a model and an attribute in Class@attribute notation.
+    |
+    | During the build, Scabbard will call `pluck` on the model for the specified attribute (e.g., App\Models\Post::pluck('slug');) and generate a new file for each.
     |
     */
   'dynamic_routes' => [
@@ -77,7 +79,8 @@ return [
     |--------------------------------------------------------------------------
     |
     | The relative path to the 404 page within your generated output
-    | directory.  This file will be served whenever a requested resource
+    | directory.  This is only applicable to the server. It specifies
+    | the file that will be served whenever a requested resource
     | cannot be found while running `scabbard:serve`.
     |
     */
