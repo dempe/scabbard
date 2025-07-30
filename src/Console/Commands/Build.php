@@ -240,6 +240,8 @@ class Build extends Command
       return;
     }
 
+    $this->info($this->timestampPrefix() . "Found these patterns to fingerprint: $patterns");
+
     $fingerprinted = [];
 
     foreach (File::allFiles($outputPath) as $file) {
