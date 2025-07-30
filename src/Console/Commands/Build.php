@@ -168,6 +168,7 @@ class Build extends Command
       }
     }
 
+    $this->fingerprintFiles($outputPath);
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
@@ -225,5 +226,86 @@ class Build extends Command
       File::deleteDirectory($dir);
     }
     File::makeDirectory($dir);
+  }
+
+  /**
+   * Fingerprint configured files in the output directory and update HTML references.
+   *
+   * @param string $outputPath
+   */
+  protected function fingerprintFiles(string $outputPath): void
+  {
+    $patterns = Config::get('scabbard.fingerprint', []);
+    if ($patterns === [] || $patterns === null || ! is_array($patterns)) {
+      return;
+    }
+
+    $this->info($this->timestampPrefix() . 'Fingerprint patterns: ' . json_encode($patterns));
+
+    $fingerprinted = [];
+
+    foreach (File::allFiles($outputPath) as $file) {
+      $relative = ltrim(str_replace($outputPath, '', $file->getPathname()), DIRECTORY_SEPARATOR);
+      $relative = str_replace(DIRECTORY_SEPARATOR, '/', $relative);
+
+      foreach ($patterns as $pattern) {
+        $regex = $this->patternToRegex($pattern);
+        if (preg_match($regex, $relative) === 1) {
+          $hash = substr((string) sha1_file($file->getPathname()), 0, 8);
+          $info = pathinfo($file->getPathname());
+          $newName = $info['filename'] . '.' . $hash . (isset($info['extension']) ? '.' . $info['extension'] : '');
+          $newPath = ($info['dirname'] ?? dirname($file->getPathname())) . DIRECTORY_SEPARATOR . $newName;
+          File::move($file->getPathname(), $newPath);
+          $fingerprinted[$relative] = str_replace(DIRECTORY_SEPARATOR, '/', ltrim(str_replace($outputPath, '', $newPath), DIRECTORY_SEPARATOR));
+          $fingerprinted['/' . $relative] = '/' . $fingerprinted[$relative];
+            $fingerprinted['./' . $relative] = './' . $fingerprinted[$relative];
+          break;
+        }
+      }
+    }
+
+    if ($fingerprinted === []) {
+      return;
+    }
+
+    foreach (File::allFiles($outputPath) as $file) {
+      if ($file->getExtension() !== 'html') {
+        continue;
+      }
+
+      $contents = File::get($file->getPathname());
+      $contents = (string) preg_replace_callback('/(href|src)=(["\'])(.*?)\2/', function ($m) use ($fingerprinted) {
+        $value = $m[3];
+        $parts = parse_url($value);
+        $path = $parts['path'] ?? $value;
+        if (! array_key_exists($path, $fingerprinted)) {
+          return $m[0];
+        }
+        $new = $fingerprinted[$path];
+        if (isset($parts['query'])) {
+          $new .= '?' . $parts['query'];
+        }
+        if (isset($parts['fragment'])) {
+          $new .= '#' . $parts['fragment'];
+        }
+        return $m[1] . '=' . $m[2] . $new . $m[2];
+      }, $contents);
+      File::put($file->getPathname(), (string) $contents);
+    }
+  }
+
+  /**
+   * Convert a glob-style fingerprint pattern into a regex.
+   * Supports ** for any directory levels.
+   */
+  protected function patternToRegex(string $pattern): string
+  {
+    $pattern = str_replace(DIRECTORY_SEPARATOR, '/', $pattern);
+    $regex = preg_quote($pattern, '#');
+    $regex = str_replace('\*\*', '.*', $regex);
+    $regex = str_replace('\*', '[^/]*', $regex);
+    $regex = str_replace('\?', '.', $regex);
+
+    return '#^' . $regex . '$#';
   }
 }
