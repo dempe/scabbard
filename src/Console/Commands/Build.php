@@ -169,6 +169,8 @@ class Build extends Command
     }
 
 
+    $this->fingerprintOutput($outputPath);
+
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
   }
@@ -225,5 +227,64 @@ class Build extends Command
       File::deleteDirectory($dir);
     }
     File::makeDirectory($dir);
+  }
+
+  /**
+   * Fingerprint configured files and update HTML references.
+   *
+   * @param string $outputPath The directory containing the generated site.
+   */
+  protected function fingerprintOutput(string $outputPath): void
+  {
+    $patterns = Config::get('scabbard.fingerprint', []);
+    if ($patterns === [] || $patterns === null) {
+      return;
+    }
+
+    $allFiles = File::allFiles($outputPath);
+    $htmlFiles = [];
+    $targets = [];
+
+    foreach ($allFiles as $file) {
+      $relative = str_replace($outputPath . DIRECTORY_SEPARATOR, '', $file->getRealPath());
+      $relative = str_replace('\\', '/', $relative);
+
+      if ($file->getExtension() === 'html') {
+        $htmlFiles[] = $file->getRealPath();
+        continue;
+      }
+
+      foreach ($patterns as $pattern) {
+        if (fnmatch($pattern, $relative, FNM_PATHNAME)) {
+          $targets[$file->getRealPath()] = $relative;
+          break;
+        }
+      }
+    }
+
+    foreach ($targets as $fullPath => $relative) {
+      $hash = substr((string) md5_file($fullPath), 0, 8);
+      $filename = pathinfo($fullPath, PATHINFO_FILENAME);
+      $extension = pathinfo($fullPath, PATHINFO_EXTENSION);
+      $dirname = pathinfo($fullPath, PATHINFO_DIRNAME);
+      $newName = $filename . '.' . $hash;
+      if ($extension !== '') {
+        $newName .= '.' . $extension;
+      }
+      $newPath = $dirname . DIRECTORY_SEPARATOR . $newName;
+
+      File::move($fullPath, $newPath);
+
+      $relNew = str_replace($outputPath . DIRECTORY_SEPARATOR, '', $newPath);
+      $relNew = str_replace('\\', '/', $relNew);
+
+      foreach ($htmlFiles as $html) {
+        $content = File::get($html);
+        $updated = str_replace($relative, $relNew, $content);
+        if ($updated !== $content) {
+          File::put($html, $updated);
+        }
+      }
+    }
   }
 }
