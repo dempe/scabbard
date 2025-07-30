@@ -90,9 +90,9 @@ These are directories that are copied wholesale into your configured output dire
 
 Specify which files should be fingerprinted during the build. Patterns use
 shell-style wildcards (e.g., `**/*.css`). Fingerprinted filenames will include a
-hash based on file content and all HTML files will have their references updated
-accordingly.
-Note: only `href` and `src` attributes with quoted values are rewritten. Any query strings or fragments are preserved.
+hash based on file content and all HTML and CSS files will have their references
+updated accordingly.
+Note: only `href` and `src` attributes with quoted values, and `url()` references in CSS are rewritten. Any query strings or fragments are preserved.
 
 **Default**: `[]` (no fingerprinting).
 
