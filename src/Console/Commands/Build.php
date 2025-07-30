@@ -258,7 +258,7 @@ class Build extends Command
           File::move($file->getPathname(), $newPath);
           $fingerprinted[$relative] = str_replace(DIRECTORY_SEPARATOR, '/', ltrim(str_replace($outputPath, '', $newPath), DIRECTORY_SEPARATOR));
           $fingerprinted['/' . $relative] = '/' . $fingerprinted[$relative];
-            $fingerprinted['./' . $relative] = './' . $fingerprinted[$relative];
+          $fingerprinted['./' . $relative] = './' . $fingerprinted[$relative];
           break;
         }
       }
