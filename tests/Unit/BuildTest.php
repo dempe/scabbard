@@ -239,4 +239,39 @@ class BuildTest extends TestCase
     File::deleteDirectory($tempInputDir);
     File::deleteDirectory($tempOutputDir);
   }
+
+  public function test_build_site_updates_css_font_references(): void
+  {
+    $tempInputDir = base_path('tests/tmp_public');
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+
+    File::ensureDirectoryExists("{$tempInputDir}/assets/fonts", 0755);
+    File::ensureDirectoryExists("{$tempInputDir}/assets/css", 0755);
+    File::put("{$tempInputDir}/assets/fonts/foo.woff", 'dummyfont');
+    File::put("{$tempInputDir}/assets/css/font.css", '@font-face { src: url("../fonts/foo.woff"); }');
+
+    Config::set('scabbard.copy_dirs', [$tempInputDir]);
+    Config::set('scabbard.routes', ['/font' => 'font.html']);
+    Config::set('scabbard.output_path', $tempOutputDir);
+    Config::set('scabbard.fingerprint', ['assets/fonts/*.woff']);
+
+    app('router')->get('/font', fn () => view('font'));
+
+    Artisan::call('scabbard:build');
+
+    $files = collect(File::allFiles($tempOutputDir . '/assets/fonts'));
+    $fingerprinted = $files->first(fn ($file) => str_starts_with($file->getFilename(), 'foo.') && $file->getExtension() === 'woff');
+
+    $this->assertNotNull($fingerprinted);
+    $this->assertFalse(File::exists("{$tempOutputDir}/assets/fonts/foo.woff"));
+
+    $css = File::get("{$tempOutputDir}/assets/css/font.css");
+    $this->assertStringContainsString($fingerprinted->getFilename(), $css);
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+  }
 }

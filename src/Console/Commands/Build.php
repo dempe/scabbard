@@ -293,6 +293,67 @@ class Build extends Command
       }, $contents);
       File::put($file->getPathname(), (string) $contents);
     }
+
+    foreach (File::allFiles($outputPath) as $file) {
+      if ($file->getExtension() !== 'css') {
+        continue;
+      }
+
+      $cssRelative = ltrim(str_replace($outputPath, '', $file->getPathname()), DIRECTORY_SEPARATOR);
+      $cssRelative = str_replace(DIRECTORY_SEPARATOR, '/', $cssRelative);
+      $cssDir = dirname($cssRelative);
+
+      $contents = File::get($file->getPathname());
+      $contents = (string) preg_replace_callback('/url\(("|\')?(.*?)\1\)/', function ($m) use ($fingerprinted, $cssDir) {
+        $quote = $m[1];
+        $value = $m[2];
+        $parts = parse_url($value);
+        $path = $parts['path'] ?? $value;
+        if ($path === '') {
+          return $m[0];
+        }
+
+        $normalized = $path;
+        if ($path[0] !== '/') {
+          $combined = $cssDir === '.' ? $path : $cssDir . '/' . $path;
+          $normalized = str_replace('\\', '/', $combined);
+          $segments = [];
+          foreach (explode('/', $normalized) as $segment) {
+            if ($segment === '' || $segment === '.') {
+              continue;
+            }
+            if ($segment === '..') {
+              array_pop($segments);
+              continue;
+            }
+            $segments[] = $segment;
+          }
+          $normalized = implode('/', $segments);
+        } else {
+          $normalized = ltrim($path, '/');
+        }
+
+        if (! array_key_exists($normalized, $fingerprinted)) {
+          if (array_key_exists('/' . $normalized, $fingerprinted)) {
+            $normalized = '/' . $normalized;
+          } elseif (array_key_exists('./' . $normalized, $fingerprinted)) {
+            $normalized = './' . $normalized;
+          } else {
+            return $m[0];
+          }
+        }
+
+        $new = '/' . ltrim($fingerprinted[$normalized], '/');
+        if (isset($parts['query'])) {
+          $new .= '?' . $parts['query'];
+        }
+        if (isset($parts['fragment'])) {
+          $new .= '#' . $parts['fragment'];
+        }
+        return 'url(' . $quote . $new . $quote . ')';
+      }, $contents);
+      File::put($file->getPathname(), (string) $contents);
+    }
   }
 
   /**
