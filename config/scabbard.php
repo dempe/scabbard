@@ -75,6 +75,19 @@ return [
 
   /*
     |--------------------------------------------------------------------------
+    | Fingerprint Patterns
+    |--------------------------------------------------------------------------
+    |
+    | Array of file patterns that should be fingerprinted. Patterns use shell-
+    | style wildcards (e.g., `**\/*.css`). If empty, no files are fingerprinted.
+    |
+    */
+  'fingerprint' => [
+    // 'assets/**/*.css',
+  ],
+
+  /*
+    |--------------------------------------------------------------------------
     | Not Found Page
     |--------------------------------------------------------------------------
     |
