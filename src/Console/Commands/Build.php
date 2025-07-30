@@ -264,6 +264,7 @@ class Build extends Command
     }
 
     if ($fingerprinted === []) {
+      $this->info($this->timestampPrefix() . 'No files found to fingerprint. Skipping fingerprinting.');
       return;
     }
 
