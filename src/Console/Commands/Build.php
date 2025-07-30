@@ -168,6 +168,7 @@ class Build extends Command
       }
     }
 
+    $this->fingerprintFiles($outputPath);
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
@@ -225,5 +226,53 @@ class Build extends Command
       File::deleteDirectory($dir);
     }
     File::makeDirectory($dir);
+  }
+
+  /**
+   * Fingerprint configured files in the output directory and update HTML references.
+   *
+   * @param string $outputPath
+   */
+  protected function fingerprintFiles(string $outputPath): void
+  {
+    $patterns = Config::get('scabbard.fingerprint', []);
+    if ($patterns === [] || ! is_array($patterns)) {
+      return;
+    }
+
+    $fingerprinted = [];
+
+    foreach (File::allFiles($outputPath) as $file) {
+      $relative = ltrim(str_replace($outputPath, '', $file->getPathname()), DIRECTORY_SEPARATOR);
+
+      foreach ($patterns as $pattern) {
+        $pattern = str_replace('**', '*', $pattern);
+        if (fnmatch($pattern, $relative)) {
+          $hash = substr((string) sha1_file($file->getPathname()), 0, 8);
+          $info = pathinfo($file->getPathname());
+          $newName = $info['filename'] . '.' . $hash . (isset($info['extension']) ? '.' . $info['extension'] : '');
+          $newPath = ($info['dirname'] ?? dirname($file->getPathname())) . DIRECTORY_SEPARATOR . $newName;
+          File::move($file->getPathname(), $newPath);
+          $fingerprinted[$relative] = ltrim(str_replace($outputPath, '', $newPath), DIRECTORY_SEPARATOR);
+          break;
+        }
+      }
+    }
+
+    if ($fingerprinted === []) {
+      return;
+    }
+
+    foreach (File::allFiles($outputPath) as $file) {
+      if ($file->getExtension() !== 'html') {
+        continue;
+      }
+
+      $contents = File::get($file->getPathname());
+      foreach ($fingerprinted as $old => $new) {
+        $contents = str_replace($old, $new, $contents);
+      }
+      File::put($file->getPathname(), $contents);
+    }
   }
 }

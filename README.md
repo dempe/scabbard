@@ -86,6 +86,15 @@ These are directories that are copied wholesale into your configured output dire
 
 **Default**: `./public`.
 
+### Fingerprint Patterns
+
+Specify which files should be fingerprinted during the build. Patterns use
+shell-style wildcards (e.g., `**/*.css`). Fingerprinted filenames will include a
+hash based on file content and all HTML files will have their references updated
+accordingly.
+
+**Default**: `[]` (no fingerprinting).
+
 ### Server Port
 
 The port your server runs on. 

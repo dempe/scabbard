@@ -108,4 +108,39 @@ class BuildTest extends TestCase
     File::deleteDirectory($tempInputDir);
     File::deleteDirectory($tempOutputDir);
   }
+
+  public function test_build_site_fingerprints_files(): void
+  {
+    $tempInputDir = base_path('tests/tmp_public');
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+
+    File::ensureDirectoryExists($tempInputDir);
+    File::put("{$tempInputDir}/dummy.txt", 'dummy');
+
+    Config::set('scabbard.copy_dirs', [$tempInputDir]);
+    Config::set('scabbard.routes', ['/fp' => 'fp.html']);
+    Config::set('scabbard.output_path', $tempOutputDir);
+    Config::set('scabbard.fingerprint', ['dummy.txt']);
+
+    app('router')->get('/fp', fn () => view('asset'));
+
+    Artisan::call('scabbard:build');
+
+    $files = collect(File::allFiles($tempOutputDir));
+    $fingerprinted = $files->first(function ($file) {
+      return str_starts_with($file->getFilename(), 'dummy.') && $file->getExtension() === 'txt';
+    });
+
+    $this->assertNotNull($fingerprinted);
+    $this->assertFalse(File::exists("{$tempOutputDir}/dummy.txt"));
+
+    $html = File::get("{$tempOutputDir}/fp.html");
+    $this->assertStringContainsString($fingerprinted->getFilename(), $html);
+
+    File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+  }
 }
