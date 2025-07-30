@@ -265,6 +265,7 @@ class Build extends Command
     }
 
     if ($fingerprinted === []) {
+      $this->info($this->timestampPrefix() . 'No files matched fingerprint patterns. Check your config.');
       return;
     }
 
