@@ -83,7 +83,7 @@ return [
     |
     */
   'fingerprint' => [
-    // 'assets/**/*.css',
+    // 'assets/**', // Fingerprint everying in `assets` directory
   ],
 
   /*
