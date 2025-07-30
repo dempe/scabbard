@@ -108,36 +108,4 @@ class BuildTest extends TestCase
     File::deleteDirectory($tempInputDir);
     File::deleteDirectory($tempOutputDir);
   }
-
-  public function test_build_site_fingerprints_specified_files(): void
-  {
-    $tempInputDir = base_path('tests/tmp_public');
-    $tempOutputDir = base_path('tests/tmp_output');
-
-    File::deleteDirectory($tempInputDir);
-    File::deleteDirectory($tempOutputDir);
-
-    File::ensureDirectoryExists("{$tempInputDir}/css");
-    File::put("{$tempInputDir}/css/app.css", 'body{}');
-
-    Config::set('scabbard.copy_dirs', [$tempInputDir]);
-    Config::set('scabbard.routes', ['/fp' => 'fp.html']);
-    Config::set('scabbard.fingerprint', ['css/*.css']);
-    Config::set('scabbard.output_path', $tempOutputDir);
-    app('router')->get('/fp', fn () => view('home_css'));
-
-    $expectedHash = substr((string) md5_file("{$tempInputDir}/css/app.css"), 0, 8);
-
-    Artisan::call('scabbard:build');
-
-    $fingerprinted = "css/app.{$expectedHash}.css";
-    $this->assertTrue(File::exists("{$tempOutputDir}/{$fingerprinted}"));
-    $this->assertFalse(File::exists("{$tempOutputDir}/css/app.css"));
-
-    $html = File::get("{$tempOutputDir}/fp.html");
-    $this->assertStringContainsString($fingerprinted, $html);
-
-    File::deleteDirectory($tempInputDir);
-    File::deleteDirectory($tempOutputDir);
-  }
 }

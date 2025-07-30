@@ -31,24 +31,6 @@ return [
 
   /*
     |--------------------------------------------------------------------------
-    | Fingerprint Files
-    |--------------------------------------------------------------------------
-    |
-    | Glob patterns relative to the output directory that should be
-    | fingerprinted. Matching files will be renamed with an 8 character
-    | content hash appended to the filename and all references inside generated
-    | HTML files will be updated automatically.
-    |
-    | Example:
-    |   'fingerprint' => ['css/*.css', 'js/*.js'],
-    |
-    */
-  'fingerprint' => [
-    // 'css/*.css',
-  ],
-
-  /*
-    |--------------------------------------------------------------------------
     | Output Directory
     |--------------------------------------------------------------------------
     |

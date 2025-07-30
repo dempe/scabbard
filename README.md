@@ -86,14 +86,6 @@ These are directories that are copied wholesale into your configured output dire
 
 **Default**: `./public`.
 
-### Fingerprint Files
-
-List of glob patterns, relative to the output directory, of files to fingerprint.
-Matched files will be renamed with an 8 character content hash and any links in
-generated HTML files will be updated automatically.
-
-**Default**: `[]` (no fingerprinting).
-
 ### Server Port
 
 The port your server runs on. 
