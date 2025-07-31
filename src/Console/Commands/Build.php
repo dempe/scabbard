@@ -278,23 +278,46 @@ class Build extends Command
       }
 
       $contents = File::get($file->getPathname());
-      $contents = (string) preg_replace_callback('/(href|src)=(["\'])(.*?)\2/', function ($m) use ($fingerprinted) {
-        $value = $m[3];
-        $parts = parse_url($value);
-        $path = $parts['path'] ?? $value;
-        if (! array_key_exists($path, $fingerprinted)) {
-          return $m[0];
+
+      $dom = new \DOMDocument();
+      $libxmlPrevious = libxml_use_internal_errors(true);
+      $dom->loadHTML($contents, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+      libxml_clear_errors();
+      libxml_use_internal_errors($libxmlPrevious);
+
+      $xpath = new \DOMXPath($dom);
+      $updated = false;
+      $nodes = $xpath->query('//@href | //@src');
+      if ($nodes !== false) {
+        foreach ($nodes as $attr) {
+          if (! $attr instanceof \DOMAttr) {
+            continue;
+          }
+
+          $value = $attr->value;
+          $parts = parse_url($value);
+          $path = $parts['path'] ?? $value;
+
+          if (! array_key_exists($path, $fingerprinted)) {
+            continue;
+          }
+
+          $new = $fingerprinted[$path];
+          if (isset($parts['query'])) {
+            $new .= '?' . $parts['query'];
+          }
+          if (isset($parts['fragment'])) {
+            $new .= '#' . $parts['fragment'];
+          }
+
+          $attr->value = $new;
+          $updated = true;
         }
-        $new = $fingerprinted[$path];
-        if (isset($parts['query'])) {
-          $new .= '?' . $parts['query'];
-        }
-        if (isset($parts['fragment'])) {
-          $new .= '#' . $parts['fragment'];
-        }
-        return $m[1] . '=' . $m[2] . $new . $m[2];
-      }, $contents);
-      File::put($file->getPathname(), (string) $contents);
+      }
+
+      if ($updated) {
+        File::put($file->getPathname(), (string) $dom->saveHTML());
+      }
     }
 
     foreach (File::allFiles($outputPath) as $file) {
