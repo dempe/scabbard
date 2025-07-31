@@ -6,6 +6,9 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
+use Sabberworm\CSS\Parser as CssParser;
+use Sabberworm\CSS\Value\URL;
+use Sabberworm\CSS\Value\CSSString;
 use Scabbard\Console\Commands\Concerns\WatchesFiles;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
 use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
@@ -303,14 +306,26 @@ class Build extends Command
       $cssRelative = str_replace(DIRECTORY_SEPARATOR, '/', $cssRelative);
       $cssDir = dirname($cssRelative);
 
-      $contents = File::get($file->getPathname());
-      $contents = (string) preg_replace_callback('/url\(("|\')?(.*?)\1\)/', function ($m) use ($fingerprinted, $cssDir) {
-        $quote = $m[1];
-        $value = $m[2];
-        $parts = parse_url($value);
-        $path = $parts['path'] ?? $value;
+      try {
+        $parser = new CssParser(File::get($file->getPathname()));
+        $document = $parser->parse();
+      } catch (\Throwable $e) {
+        $this->error($this->timestampPrefix() . 'CSS parsing failed for ' . $cssRelative . ': ' . $e->getMessage());
+        continue;
+      }
+
+      $updated = false;
+
+      foreach ($document->getAllValues() as $value) {
+        if (! $value instanceof URL) {
+          continue;
+        }
+
+        $original = $value->getURL()->getString();
+        $parts = parse_url($original);
+        $path = $parts['path'] ?? $original;
         if ($path === '') {
-          return $m[0];
+          continue;
         }
 
         $normalized = $path;
@@ -339,7 +354,7 @@ class Build extends Command
           } elseif (array_key_exists('./' . $normalized, $fingerprinted)) {
             $normalized = './' . $normalized;
           } else {
-            return $m[0];
+            continue;
           }
         }
 
@@ -350,9 +365,14 @@ class Build extends Command
         if (isset($parts['fragment'])) {
           $new .= '#' . $parts['fragment'];
         }
-        return 'url(' . $quote . $new . $quote . ')';
-      }, $contents);
-      File::put($file->getPathname(), (string) $contents);
+
+        $value->setURL(new CSSString($new));
+        $updated = true;
+      }
+
+      if ($updated) {
+        File::put($file->getPathname(), $document->render());
+      }
     }
   }
 
