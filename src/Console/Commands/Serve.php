@@ -3,7 +3,6 @@
 namespace Scabbard\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
 use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
@@ -14,7 +13,7 @@ class Serve extends Command
   use HasTimestampPrefix;
   use RequiresScabbardConfig;
 
-  protected $signature = 'scabbard:serve';
+  protected $signature = 'scabbard:serve {--drafts : Include drafts in the generated output}';
 
   protected $description = 'Watch the site and serve the built output';
 
@@ -43,7 +42,12 @@ class Serve extends Command
     ], null, ['SCABBARD_NOT_FOUND' => $notFound]);
     $server->start();
 
-    $builder = new Process(['php', 'artisan', 'scabbard:build', '--watch']);
+    $builderCommand = ['php', 'artisan', 'scabbard:build', '--watch'];
+    if ($this->option('drafts')) {
+      $builderCommand[] = '--drafts';
+    }
+
+    $builder = new Process($builderCommand);
     $builder->setTimeout(null);
     $builder->start(function ($type, $buffer) {
       echo $buffer;

@@ -23,7 +23,7 @@ class Build extends Command
    *
    * @var string
    */
-  protected $signature = 'scabbard:build {--watch}';
+  protected $signature = 'scabbard:build {--watch} {--drafts : Include drafts in the generated output}';
 
   /**
    * The console command description.
