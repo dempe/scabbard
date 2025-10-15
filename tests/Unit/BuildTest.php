@@ -274,4 +274,96 @@ class BuildTest extends TestCase
     File::deleteDirectory($tempInputDir);
     File::deleteDirectory($tempOutputDir);
   }
+
+  public function test_build_site_skips_drafts_by_default(): void
+  {
+    $tempContentDir = base_path('tests/tmp_content');
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempContentDir);
+    File::deleteDirectory($tempOutputDir);
+
+    File::ensureDirectoryExists($tempContentDir);
+    File::put("{$tempContentDir}/published.md", <<<MD
+---
+title: Published Post
+draft: false
+---
+
+Content
+MD);
+
+    File::put("{$tempContentDir}/draft.md", <<<MD
+---
+title: Draft Post
+draft: true
+---
+
+Content
+MD);
+
+    $originalCopyDirs = Config::get('scabbard.copy_dirs');
+    $originalContentDirs = Config::get('scabbard.content_dirs');
+    $originalRoutes = Config::get('scabbard.routes');
+    $originalOutputPath = Config::get('scabbard.output_path');
+
+    Config::set('scabbard.copy_dirs', [$tempContentDir]);
+    Config::set('scabbard.content_dirs', [$tempContentDir]);
+    Config::set('scabbard.routes', []);
+    Config::set('scabbard.output_path', $tempOutputDir);
+
+    Artisan::call('scabbard:build');
+
+    $this->assertTrue(File::exists("{$tempOutputDir}/published.md"));
+    $this->assertFalse(File::exists("{$tempOutputDir}/draft.md"));
+
+    Config::set('scabbard.copy_dirs', $originalCopyDirs);
+    Config::set('scabbard.content_dirs', $originalContentDirs);
+    Config::set('scabbard.routes', $originalRoutes);
+    Config::set('scabbard.output_path', $originalOutputPath);
+
+    File::deleteDirectory($tempContentDir);
+    File::deleteDirectory($tempOutputDir);
+  }
+
+  public function test_build_site_includes_drafts_when_requested(): void
+  {
+    $tempContentDir = base_path('tests/tmp_content');
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempContentDir);
+    File::deleteDirectory($tempOutputDir);
+
+    File::ensureDirectoryExists($tempContentDir);
+    File::put("{$tempContentDir}/draft.md", <<<MD
+---
+title: Draft Post
+draft: true
+---
+
+Content
+MD);
+
+    $originalCopyDirs = Config::get('scabbard.copy_dirs');
+    $originalContentDirs = Config::get('scabbard.content_dirs');
+    $originalRoutes = Config::get('scabbard.routes');
+    $originalOutputPath = Config::get('scabbard.output_path');
+
+    Config::set('scabbard.copy_dirs', [$tempContentDir]);
+    Config::set('scabbard.content_dirs', [$tempContentDir]);
+    Config::set('scabbard.routes', []);
+    Config::set('scabbard.output_path', $tempOutputDir);
+
+    Artisan::call('scabbard:build', ['--drafts' => true]);
+
+    $this->assertTrue(File::exists("{$tempOutputDir}/draft.md"));
+
+    Config::set('scabbard.copy_dirs', $originalCopyDirs);
+    Config::set('scabbard.content_dirs', $originalContentDirs);
+    Config::set('scabbard.routes', $originalRoutes);
+    Config::set('scabbard.output_path', $originalOutputPath);
+
+    File::deleteDirectory($tempContentDir);
+    File::deleteDirectory($tempOutputDir);
+  }
 }
