@@ -23,7 +23,7 @@ class Build extends Command
    *
    * @var string
    */
-  protected $signature = 'scabbard:build {--watch}';
+  protected $signature = 'scabbard:build {--watch} {--drafts : Include drafts in the generated output}';
 
   /**
    * The console command description.
@@ -86,17 +86,35 @@ class Build extends Command
     $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $this->deleteAndCreate($outputPath);
 
+    $includeDrafts = (bool) $this->option('drafts');
+    $draftsRealPath = $this->resolveDraftsPath(Config::get('scabbard.drafts_path'));
+
     // Copy configured directories wholesale
     $copyDirs = Config::get('scabbard.copy_dirs', [base_path('public')]);
     foreach ($copyDirs as $dir) {
-      if (File::isDirectory($dir)) {
-        File::copyDirectory($dir, $outputPath);
+      if (! File::isDirectory($dir)) {
+        continue;
+      }
 
-        // Remove Laravel's front controller to ensure static 404s work
-        $indexPhp = $outputPath . DIRECTORY_SEPARATOR . 'index.php';
-        if (File::exists($indexPhp)) {
-          File::delete($indexPhp);
-        }
+      $copiedDir = realpath($dir);
+      if ($copiedDir === false) {
+        continue;
+      }
+
+      if (! $includeDrafts && $draftsRealPath !== null && $copiedDir === $draftsRealPath) {
+        continue;
+      }
+
+      File::copyDirectory($dir, $outputPath);
+
+      if (! $includeDrafts && $draftsRealPath !== null) {
+        $this->pruneDraftsFromOutput($outputPath, $copiedDir, $draftsRealPath);
+      }
+
+      // Remove Laravel's front controller to ensure static 404s work
+      $indexPhp = $outputPath . DIRECTORY_SEPARATOR . 'index.php';
+      if (File::exists($indexPhp)) {
+        File::delete($indexPhp);
       }
     }
 
@@ -175,6 +193,55 @@ class Build extends Command
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
+  }
+
+  /**
+   * Resolve the configured drafts directory to an absolute path if possible.
+   */
+  protected function resolveDraftsPath(mixed $draftsPath): ?string
+  {
+    if (! is_string($draftsPath) || $draftsPath === '') {
+      return null;
+    }
+
+    $realPath = realpath($draftsPath);
+    if ($realPath === false) {
+      return null;
+    }
+
+    if (! File::isDirectory($realPath)) {
+      return null;
+    }
+
+    return $realPath;
+  }
+
+  /**
+   * Remove the drafts directory from the output when drafts are excluded.
+   */
+  protected function pruneDraftsFromOutput(string $outputPath, string $copiedDir, string $draftsRealPath): void
+  {
+    if ($copiedDir === $draftsRealPath) {
+      return;
+    }
+
+    $prefix = $copiedDir . DIRECTORY_SEPARATOR;
+    if (! str_starts_with($draftsRealPath, $prefix)) {
+      return;
+    }
+
+    $relative = trim(substr($draftsRealPath, strlen($copiedDir)), DIRECTORY_SEPARATOR);
+    if ($relative === '') {
+      return;
+    }
+
+    $target = $outputPath . DIRECTORY_SEPARATOR . $relative;
+
+    if (File::isDirectory($target)) {
+      File::deleteDirectory($target);
+    } elseif (File::exists($target)) {
+      File::delete($target);
+    }
   }
 
   /**
