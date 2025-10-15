@@ -12,6 +12,7 @@ use Sabberworm\CSS\Value\CSSString;
 use Scabbard\Console\Commands\Concerns\WatchesFiles;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
 use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
+use Scabbard\Content\FrontMatterParser;
 
 class Build extends Command
 {
@@ -31,6 +32,13 @@ class Build extends Command
    * @var string
    */
   protected $description = 'Build the static site output';
+
+  protected array $contentFrontMatter = [];
+
+  public function __construct(protected FrontMatterParser $frontMatterParser)
+  {
+    parent::__construct();
+  }
 
   /**
    *  Generate a static copy of the site by rendering all routes and saving the output.
@@ -85,6 +93,9 @@ class Build extends Command
     // First, create the directory structure
     $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $this->deleteAndCreate($outputPath);
+
+    $contentDirs = Config::get('scabbard.content_dirs', []);
+    $this->contentFrontMatter = $this->frontMatterParser->parse($contentDirs);
 
     // Copy configured directories wholesale
     $copyDirs = Config::get('scabbard.copy_dirs', [base_path('public')]);

@@ -17,7 +17,7 @@ class ServeTest extends TestCase
     /** @var \Illuminate\Foundation\Console\Kernel $kernel */
     $kernel = $this->app->make(\Illuminate\Foundation\Console\Kernel::class);
 
-    $kernel->registerCommand(new class () extends \Scabbard\Console\Commands\Build {
+    $kernel->registerCommand(new class ($this->app->make(\Scabbard\Content\FrontMatterParser::class)) extends \Scabbard\Console\Commands\Build {
       public function handle(): void
       {
         $this->buildSite();
