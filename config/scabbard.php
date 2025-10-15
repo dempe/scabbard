@@ -41,6 +41,19 @@ return [
 
   /*
     |--------------------------------------------------------------------------
+    | Content Directories
+    |--------------------------------------------------------------------------
+    |
+    | These directories contain Markdown content with YAML frontmatter.
+    | Specify your content directory(ies) if you want to skip publishing drafts (`draft: true` in your frontmatter).
+    |
+    */
+  'content_dirs' => [
+    base_path('resources/posts'),
+  ],
+
+  /*
+    |--------------------------------------------------------------------------
     | Routes to Render
     |--------------------------------------------------------------------------
     |
