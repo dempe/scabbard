@@ -13,6 +13,7 @@ use Scabbard\Console\Commands\Concerns\WatchesFiles;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
 use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
 use Scabbard\Content\FrontMatterParser;
+use Spatie\YamlFrontMatter\Document;
 
 class Build extends Command
 {
@@ -110,6 +111,8 @@ class Build extends Command
         }
       }
     }
+
+    $this->removeDraftContent($outputPath, $copyDirs);
 
     $routes = Config::get('scabbard.routes', []);
     foreach ($routes as $uri => $filename) {
@@ -240,6 +243,72 @@ class Build extends Command
       File::deleteDirectory($dir);
     }
     File::makeDirectory($dir);
+  }
+
+  /**
+   * Remove draft content from the output directory unless drafts are requested.
+   */
+  protected function removeDraftContent(string $outputPath, array $copyDirs): void
+  {
+    if ($this->option('drafts')) {
+      return;
+    }
+
+    foreach ($this->contentFrontMatter as $path => $document) {
+      if (! $document instanceof Document) {
+        continue;
+      }
+
+      if (! $this->isDraftDocument($document)) {
+        continue;
+      }
+
+      $documentPath = realpath($path) ?: $path;
+
+      foreach ($copyDirs as $dir) {
+        $normalizedDir = realpath($dir);
+        if ($normalizedDir === false) {
+          $normalizedDir = rtrim($dir, DIRECTORY_SEPARATOR);
+        }
+
+        $prefix = rtrim($normalizedDir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+        if (! str_starts_with($documentPath, $prefix)) {
+          continue;
+        }
+
+        $relative = substr($documentPath, strlen($prefix));
+        if ($relative === false || $relative === '') {
+          continue;
+        }
+
+        $outputFile = rtrim($outputPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $relative;
+        if (File::exists($outputFile)) {
+          File::delete($outputFile);
+        }
+
+        break;
+      }
+    }
+  }
+
+  /**
+   * Determine if the provided document is marked as a draft.
+   */
+  protected function isDraftDocument(Document $document): bool
+  {
+    $draft = $document->matter('draft');
+
+    if (is_bool($draft)) {
+      return $draft;
+    }
+
+    if (is_string($draft) || is_int($draft)) {
+      $value = filter_var($draft, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+      return $value ?? false;
+    }
+
+    return false;
   }
 
   /**
