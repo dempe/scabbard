@@ -95,9 +95,6 @@ class Build extends Command
     $outputPath = Config::get('scabbard.output_path', base_path('output'));
     $this->deleteAndCreate($outputPath);
 
-    $contentDirs = Config::get('scabbard.content_dirs', []);
-    $this->contentFrontMatter = $this->frontMatterParser->parse($contentDirs);
-
     // Copy configured directories wholesale
     $copyDirs = Config::get('scabbard.copy_dirs', [base_path('public')]);
     foreach ($copyDirs as $dir) {
@@ -112,7 +109,8 @@ class Build extends Command
       }
     }
 
-    $this->removeDraftContent($outputPath, $copyDirs);
+    $contentDirs = Config::get('scabbard.content_dirs', []);
+    $this->removeDraftContent($outputPath, $contentDirs);
 
     $routes = Config::get('scabbard.routes', []);
     foreach ($routes as $uri => $filename) {
