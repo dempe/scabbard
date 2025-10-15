@@ -8,6 +8,8 @@ Features:
 - **Static builds** 🔨  – Outputs your site to a target directory (`output/` by default)
 - **Hot rebuilding** 🔥 – Rebuilds automagically when changes are detected
 - **Local server** 🧑🏽‍💻   – Serves the site locally on the port of your choice
+- **Fingerprinting** ☝🏼 - Fingerprint your static assets
+- **Drafts** 📄         - Skip publishing posts marked with `draft: true` in their YAML frontmatter
 
 All built in pure PHP.
 
@@ -18,6 +20,12 @@ php artisan scabbard:serve
 ```
 
 And you're off to the races! 🏇🏻
+
+If you want to include your drafts (`draft: true` in your YAML frontmatter),
+
+```
+php artisan scabbard:serve --drafts
+```
 
 ## Installation
 
@@ -86,6 +94,10 @@ These are directories that are copied wholesale into your configured output dire
 
 **Default**: `./public`.
 
+### Drafts
+
+Specify your content directories in the config file at `content_directories`.  Scabbard will parse the YAML frontmatter.  If `draft: true` is set, these files will not be added to the build by default.  If you want to include them, pass the `--drafts` option.
+
 ### Fingerprint Patterns
 
 Specify which files should be fingerprinted during the build. Patterns use
@@ -144,7 +156,6 @@ to analyze the codebase.
 ## Roadmap
 
 - [ ] Markdown parsing
-- [ ] Frontmatter parsing
 - [ ] Syntax highlighting
 - [ ] Deployment
 - [ ] (Maybe) Add option to render raw views directly without going through app (useful if you have a set of pure Blade templates)
