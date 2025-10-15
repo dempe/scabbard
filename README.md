@@ -86,13 +86,6 @@ These are directories that are copied wholesale into your configured output dire
 
 **Default**: `./public`.
 
-### Drafts Directory
-
-Configure the directory that stores draft content. Draft files are excluded from
-builds by default. Pass `--drafts` to `scabbard:build` or `scabbard:serve` to include them.
-
-**Default**: `./drafts`.
-
 ### Fingerprint Patterns
 
 Specify which files should be fingerprinted during the build. Patterns use
@@ -129,18 +122,6 @@ Use the `--watch` flag to enable hot rebuilds without running a server:
 
 ```
 php artisan scabbard:build --watch
-```
-
-Include draft content during a build with:
-
-```
-php artisan scabbard:build --drafts
-```
-
-The same option is available when serving locally:
-
-```
-php artisan scabbard:serve --drafts
 ```
 
 

@@ -31,17 +31,6 @@ return [
 
   /*
     |--------------------------------------------------------------------------
-    | Drafts Directory
-    |--------------------------------------------------------------------------
-    |
-    | Content stored in this directory will be excluded from builds unless the
-    | `--drafts` option is provided when running the build or serve commands.
-    |
-    */
-  'drafts_path' => base_path('drafts'),
-
-  /*
-    |--------------------------------------------------------------------------
     | Output Directory
     |--------------------------------------------------------------------------
     |
