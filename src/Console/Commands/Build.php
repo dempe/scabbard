@@ -6,12 +6,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Scabbard\Console\Commands\Concerns\WatchesFiles;
 use Scabbard\Console\Commands\Concerns\HasTimestampPrefix;
 use Scabbard\Console\Commands\Concerns\RequiresScabbardConfig;
 use Scabbard\Content\FrontMatterParser;
 use Scabbard\Support\Fingerprinter;
 use Spatie\YamlFrontMatter\Document;
+use Symfony\Component\HttpFoundation\Response;
 
 class Build extends Command
 {
@@ -117,7 +119,7 @@ class Build extends Command
         $response = app()->handle(Request::create($uri));
 
         if ($response->getStatusCode() >= 400) {
-          $this->error($this->timestampPrefix() . "Route {$uri} failed with status " . $response->getStatusCode());
+          $this->reportRouteFailure($uri, $response);
           continue;
         }
 
@@ -169,7 +171,7 @@ class Build extends Command
           $response = app()->handle(Request::create($uri));
 
           if ($response->getStatusCode() >= 400) {
-            $this->error($this->timestampPrefix() . "Route {$uri} failed with status " . $response->getStatusCode());
+            $this->reportRouteFailure($uri, $response);
             continue;
           }
 
@@ -190,6 +192,35 @@ class Build extends Command
 
     $this->info($this->timestampPrefix() . "Site copied to: $outputPath");
     $this->info($this->timestampPrefix() . 'Site build complete.');
+  }
+
+  protected function reportRouteFailure(string $uri, Response $response): void
+  {
+    $status = $response->getStatusCode();
+    $this->error($this->timestampPrefix() . "Route {$uri} failed with status {$status}");
+
+    $exception = property_exists($response, 'exception') ? $response->exception : null;
+
+    if ($exception instanceof \Throwable) {
+      $this->error($this->timestampPrefix() . '→ ' . $exception::class . ': ' . $exception->getMessage());
+      $this->error($this->timestampPrefix() . '→ at ' . $exception->getFile() . ':' . $exception->getLine());
+
+      return;
+    }
+
+    $content = trim((string) $response->getContent());
+
+    if ($content === '') {
+      return;
+    }
+
+    $normalized = preg_replace('/\s+/', ' ', strip_tags($content));
+
+    if (! is_string($normalized) || $normalized === '') {
+      return;
+    }
+
+    $this->error($this->timestampPrefix() . '→ Response: ' . Str::limit($normalized, 500));
   }
 
   /**
