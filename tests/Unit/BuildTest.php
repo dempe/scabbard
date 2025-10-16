@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Console\Command;
 use Scabbard\Tests\TestCase;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class BuildTest extends TestCase
 {
@@ -174,6 +175,33 @@ class BuildTest extends TestCase
     $this->assertStringContainsString($fingerprinted->getFilename(), $html);
 
     File::deleteDirectory($tempInputDir);
+    File::deleteDirectory($tempOutputDir);
+  }
+
+  public function test_build_site_reports_exceptions_when_routes_fail(): void
+  {
+    $tempOutputDir = base_path('tests/tmp_output');
+
+    File::deleteDirectory($tempOutputDir);
+
+    Config::set('scabbard.copy_dirs', []);
+    Config::set('scabbard.routes', ['/boom' => 'boom.html']);
+    Config::set('scabbard.output_path', $tempOutputDir);
+    Config::set('app.debug', true);
+
+    app('router')->get('/boom', function () {
+      throw new \RuntimeException('Boom goes the dynamite');
+    });
+
+    $buffer = new BufferedOutput();
+    Artisan::call('scabbard:build', [], $buffer);
+
+    $output = $buffer->fetch();
+
+    $this->assertStringContainsString('Route /boom failed with status 500', $output);
+    $this->assertStringContainsString('RuntimeException', $output);
+    $this->assertStringContainsString('Boom goes the dynamite', $output);
+
     File::deleteDirectory($tempOutputDir);
   }
 
