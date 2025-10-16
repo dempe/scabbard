@@ -20,7 +20,10 @@ class WatchTest extends TestCase
     Config::set('scabbard.output_path', $tempOutputDir);
     app('router')->get('/watch', fn () => view('home'));
 
-    $command = new class ($this->app->make(\Scabbard\Content\FrontMatterParser::class)) extends \Scabbard\Console\Commands\Build {
+    $command = new class (
+      $this->app->make(\Scabbard\Content\FrontMatterParser::class),
+      $this->app->make(\Scabbard\Support\Fingerprinter::class)
+    ) extends \Scabbard\Console\Commands\Build {
       public function handle(): void
       {
         $this->buildSite();
